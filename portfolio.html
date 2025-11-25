@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Proyectos de Análisis de Datos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #3b82f6;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .project-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .filter-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 1rem;
+            max-width: 4xl;
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: 2rem;
+        }
+        
+        .power-bi-embed {
+            aspect-ratio: 16/9;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-container video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-container:hover .play-overlay {
+            opacity: 1;
+        }
+
+        .play-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .video-container:hover .play-icon {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <!-- Navegación -->
+    <nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-slate-200 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="text-xl font-bold text-slate-800">Portfolio DataAnalytics</a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Inicio</a>
+                    <a href="about.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Sobre Mí</a>
+                    <a href="portfolio.html" class="nav-link text-blue-600 font-medium">Portfolio</a>
+                    <a href="blog.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Blog</a>
+                    <a href="contact.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Contacto</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-blue-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Menú Móvil -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-200">
+            <div class="px-4 py-2 space-y-2">
+                <a href="index.html" class="block py-2 text-slate-600 hover:text-blue-600">Inicio</a>
+                <a href="about.html" class="block py-2 text-slate-600 hover:text-blue-600">Sobre Mí</a>
+                <a href="portfolio.html" class="block py-2 text-blue-600">Portfolio</a>
+                <a href="blog.html" class="block py-2 text-slate-600 hover:text-blue-600">Blog</a>
+                <a href="contact.html" class="block py-2 text-slate-600 hover:text-blue-600">Contacto</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sección Hero -->
+    <section class="bg-gradient-to-br from-blue-50 to-indigo-100 pt-24 pb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center scroll-reveal">
+                <h1 class="text-5xl font-bold text-slate-800 mb-6">Mi Portfolio</h1>
+                <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                    Explora mis proyectos de análisis de datos, desde dashboards interactivos hasta soluciones integrales de business intelligence
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filtros de Proyectos -->
+    <section class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap justify-center gap-4 scroll-reveal">
+                <button class="filter-btn active px-6 py-3 rounded-full border-2 border-blue-600 text-blue-600 font-medium" data-filter="all">
+                    Todos los Proyectos
+                </button>
+                <button class="filter-btn px-6 py-3 rounded-full border-2 border-slate-300 text-slate-600 font-medium" data-filter="powerbi">
+                    Power BI
+                </button>
+                <button class="filter-btn px-6 py-3 rounded-full border-2 border-slate-300 text-slate-600 font-medium" data-filter="powerapps">
+                    Power Apps
+                </button>
+                <button class="filter-btn px-6 py-3 rounded-full border-2 border-slate-300 text-slate-600 font-medium" data-filter="fabric">
+                    Microsoft Fabric
+                </button>
+                <button class="filter-btn px-6 py-3 rounded-full border-2 border-slate-300 text-slate-600 font-medium" data-filter="dashboard">
+                    Dashboards
+                </button>
+                <button class="filter-btn px-6 py-3 rounded-full border-2 border-slate-300 text-slate-600 font-medium" data-filter="analytics">
+                    Analytics
+                </button>
+                <button class="filter-btn px-6 py-3 rounded-full border-2 border-slate-300 text-slate-600 font-medium" data-filter="webapp">
+                    Web Apps
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Grid de Proyectos -->
+    <section class="py-20 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div id="projects-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Proyecto 1: Dashboard de Gestión de Reclamos -->
+                <div class="project-card bg-white rounded-xl shadow-lg overflow-hidden scroll-reveal" data-category="powerbi dashboard" data-project="sales-dashboard">
+                    <div class="relative">
+                        <img src="./resources/dashboard-1.jpg" alt="Dashboard de Rendimiento de Ventas" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">Power BI</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-slate-800 mb-3">Dashboard de Gestión de Reclamos</h3>
+                        <p class="text-slate-600 mb-4">
+                            Sistema centralizado para gestión y análisis de reclamos ciudadanos con mapeo geográfico interactivo y análisis en tiempo real.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">DAX</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">Power Apps</span>
+                            <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-sm">SQL Server</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-slate-500">Municipalidad</span>
+                            <button class="text-blue-600 hover:text-blue-800 font-medium">Ver Detalles →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proyecto 2: Reporte de Ventas e Inventario -->
+                <div class="project-card bg-white rounded-xl shadow-lg overflow-hidden scroll-reveal" data-category="powerbi dashboard analytics" data-project="inventory-sales">
+                    <div class="relative">
+                        <img src="./resources/Analisis-ventas.jpg" alt="Reporte de Ventas e Inventario" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium">Power BI</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-slate-800 mb-3">📈 Reporte de Ventas e Inventario</h3>
+                        <p class="text-slate-600 mb-4">
+                            Dashboard unificado que transformó archivos Excel desorganizados en un sistema integral para análisis de ventas y control de inventario.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">DAX</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">Excel</span>
+                            <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-sm">Modelado</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-slate-500">Empire Moto</span>
+                            <button class="text-blue-600 hover:text-blue-800 font-medium">Ver Detalles →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proyecto 3: Aplicación de Registro y ventas en Power Apps -->
+                <div class="project-card bg-white rounded-xl shadow-lg overflow-hidden scroll-reveal" data-category="powerapps powerbi dashboard" data-project="municipal-claims">
+                    <div class="relative">
+                        <!-- Video en lugar de imagen -->
+                        <div class="video-container">
+                            <video poster="./resources/Power-Apps-Registro.jpg" class="w-full h-48 object-cover">
+                                <source src="./resources/Video-PowerApps-Form.mp4" type="video/mp4">
+                                Tu navegador no soporta el elemento de video.
+                            </video>
+                            <div class="play-overlay">
+                                <div class="play-icon">
+                                    <svg class="w-6 h-6 text-purple-600 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-medium">Power Apps</span>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">Power BI</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-slate-800 mb-3">Gestión de Reclamos Municipales</h3>
+                        <p class="text-slate-600 mb-4">
+                            Sistema integral para gestión digital de reclamos ciudadanos con aplicación móvil y dashboard analítico.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">Power Apps</span>
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">Power BI</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">SharePoint</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-slate-500">Depósito Warnes</span>
+                            <button class="text-blue-600 hover:text-blue-800 font-medium">Ver Detalles →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proyecto 4: UTech Warehouse - Sistema Web -->
+                <div class="project-card bg-white rounded-xl shadow-lg overflow-hidden scroll-reveal" data-category="webapp fullstack javascript" data-project="utech-warehouse">
+                    <div class="relative">
+                        <img src="./resources/utech-warehouse-preview.jpg" alt="UTech Warehouse Sistema Web" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-medium">Web App</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-slate-800 mb-3">UTech Warehouse - Sistema Web</h3>
+                        <p class="text-slate-600 mb-4">
+                            Aplicación web full-stack para gestión de almacén con dashboard interactivo, gestión de inventario en tiempo real y panel administrativo completo.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">JavaScript</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">HTML/CSS</span>
+                            <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-sm">Frontend</span>
+                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">Backend</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-slate-500">Proyecto Personal</span>
+                            <button class="text-blue-600 hover:text-blue-800 font-medium">Ver Detalles →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proyecto 5: Analytics con Microsoft Fabric -->
+                <div class="project-card bg-white rounded-xl shadow-lg overflow-hidden scroll-reveal" data-category="fabric analytics" data-project="fabric-analytics">
+                    <div class="relative">
+                        <img src="./resources/workspace-1.jpg" alt="Analytics con Microsoft Fabric" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium">Fabric</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-slate-800 mb-3">Plataforma Unificada de Analytics</h3>
+                        <p class="text-slate-600 mb-4">
+                            Solución de analytics empresarial construida en Microsoft Fabric con procesamiento de datos en tiempo real e insights potenciados por IA.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">OneLake</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">Tiempo Real</span>
+                            <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-sm">IA</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-slate-500">Cliente: TechGlobal</span>
+                            <button class="text-blue-600 hover:text-blue-800 font-medium">Ver Detalles →</button>
+                        </div>
+                    </div>
+                </div>
+               
+                <!-- Proyecto 6: Encuesta -->
+                <div class="project-card bg-white rounded-xl shadow-lg overflow-hidden scroll-reveal" data-category="powerbi analytics" data-project="financial-analytics">
+                    <div class="relative">
+                        <img src="./resources/Encuesta.jpg" alt="Encuesta" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">Power BI</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-slate-800 mb-3">Dashboard Corporativo de Encuestas</h3>
+                        <p class="text-slate-600 mb-4">
+                           En un entorno empresarial caracterizado por disrupciones tecnológicas aceleradas, cambios demográficos 
+                           generacionales y transformaciones en modelos de trabajo, las organizaciones enfrentan 
+                           desafíos sin precedentes para entender y adaptarse a las necesidades de la fuerza laboral global.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">Lenguaje M</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">Power Query</span>
+                            <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-sm">DAX</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-slate-500">The Adecco Group</span>
+                            <button class="text-blue-600 hover:text-blue-800 font-medium">Ver Detalles →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proyecto 7: Analytics de Cadena de Suministro -->
+                <div class="project-card bg-white rounded-xl shadow-lg overflow-hidden scroll-reveal" data-category="fabric dashboard" data-project="supply-chain">
+                    <div class="relative">
+                        <img src="./resources/dashboard-1.jpg" alt="Analytics de Cadena de Suministro" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium">Fabric</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-slate-800 mb-3">Optimización de Cadena de Suministro</h3>
+                        <p class="text-slate-600 mb-4">
+                            Visibilidad integral de la cadena de suministro con analytics predictivos, optimización de inventario y monitoreo de proveedores.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">Synapse</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">Data Factory</span>
+                            <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-sm">Datos IoT</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-slate-500">Cliente: GlobalLogistics</span>
+                            <button class="text-blue-600 hover:text-blue-800 font-medium">Ver Detalles →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stack Tecnológico y Metodología -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 scroll-reveal">
+            <h2 class="text-4xl font-bold text-slate-800 mb-4">Arquitectura y Metodología Power BI</h2>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                Enfoque estructurado para entregar soluciones de business intelligence efectivas y escalables utilizando Power BI.
+            </p>
+        </div>
+        
+        <div class="grid lg:grid-cols-2 gap-12">
+            <!-- Columna Izquierda: Stack Tecnológico -->
+            <div class="scroll-reveal">
+                <div class="bg-slate-50 p-8 rounded-2xl h-full">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-slate-800">Stack Tecnológico</h3>
+                    </div>
+                    
+                    <div class="space-y-6 mb-8">
+                        <div class="flex items-center justify-between p-4 bg-white rounded-lg border border-slate-200 hover:shadow-md transition-shadow">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <span class="font-semibold text-slate-800 block">Power Query</span>
+                                    <span class="text-sm text-slate-500">Transformación de datos</span>
+                                </div>
+                            </div>
+                            <span class="text-xs font-medium bg-yellow-100 text-yellow-800 px-2 py-1 rounded">ETL</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-white rounded-lg border border-slate-200 hover:shadow-md transition-shadow">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <span class="font-semibold text-slate-800 block">DAX</span>
+                                    <span class="text-sm text-slate-500">Lenguaje de fórmulas</span>
+                                </div>
+                            </div>
+                            <span class="text-xs font-medium bg-blue-100 text-blue-800 px-2 py-1 rounded">Cálculos</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between p-4 bg-white rounded-lg border border-slate-200 hover:shadow-md transition-shadow">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <span class="font-semibold text-slate-800 block">SQL Server</span>
+                                    <span class="text-sm text-slate-500">Base de datos</span>
+                                </div>
+                            </div>
+                            <span class="text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded">Data</span>
+                        </div>
+                    </div>
+
+                    <!-- Capacidades Técnicas -->
+                    <div class="border-t border-slate-200 pt-6">
+                        <h4 class="font-semibold text-slate-800 mb-4 text-lg">Capacidades Técnicas</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-slate-700 text-sm">Modelado de datos dimensional</span>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-slate-700 text-sm">Optimización de consultas DAX</span>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-5 h-5 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-3 h-3 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-slate-700 text-sm">Seguridad a nivel de fila (RLS)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Metodología y Métricas -->
+            <div class="scroll-reveal">
+                <div class="bg-slate-50 p-8 rounded-2xl h-full">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-semibold text-slate-800">Metodología de Desarrollo</h3>
+                    </div>
+
+                    <!-- Fases del Proyecto -->
+                    <div class="space-y-6 mb-8">
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center border-2 border-blue-200">
+                                    <span class="text-blue-600 font-bold text-sm">1</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-slate-800 mb-1">Análisis de Requerimientos</h4>
+                                <p class="text-slate-600 text-sm">Identificación de KPIs críticos y fuentes de datos para definir objetivos claros del proyecto.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center border-2 border-green-200">
+                                    <span class="text-green-600 font-bold text-sm">2</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-slate-800 mb-1">Arquitectura y ETL</h4>
+                                <p class="text-slate-600 text-sm">Diseño del modelo de datos y automatización de procesos de extracción y transformación.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center border-2 border-amber-200">
+                                    <span class="text-amber-600 font-bold text-sm">3</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-slate-800 mb-1">Desarrollo Iterativo</h4>
+                                <p class="text-slate-600 text-sm">Creación de dashboards con feedback continuo para asegurar la usabilidad y valor.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Métricas de Impacto -->
+                    <div class="border-t border-slate-200 pt-6">
+                        <h4 class="font-semibold text-slate-800 mb-4 text-lg">Resultados Medibles</h4>
+                        <div class="grid grid-cols-2 gap-3 mb-6">
+                            <div class="bg-white p-3 rounded-lg text-center border border-slate-200 hover:shadow-sm transition-shadow">
+                                <div class="text-xl font-bold text-blue-600 mb-1">95%</div>
+                                <div class="text-xs text-slate-600 leading-tight">Reducción reportes manuales</div>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg text-center border border-slate-200 hover:shadow-sm transition-shadow">
+                                <div class="text-xl font-bold text-green-600 mb-1">70%</div>
+                                <div class="text-xs text-slate-600 leading-tight">Mejora tiempo análisis</div>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg text-center border border-slate-200 hover:shadow-sm transition-shadow">
+                                <div class="text-xl font-bold text-amber-600 mb-1">50+</div>
+                                <div class="text-xs text-slate-600 leading-tight">KPIs automatizados</div>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg text-center border border-slate-200 hover:shadow-sm transition-shadow">
+                                <div class="text-xl font-bold text-purple-600 mb-1">24/7</div>
+                                <div class="text-xs text-slate-600 leading-tight">Disponibilidad datos</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Llamada a la acción -->
+                        <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <h4 class="font-semibold text-blue-800 mb-2">Transformamos tus datos?</h4>
+                            <p class="text-blue-700 text-sm mb-3">
+                                Conversemos sobre cómo podemos implementar soluciones similares para tu organización.
+                            </p>
+                            <a href="contact.html" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-semibold text-sm transition-colors">
+                                Iniciar proyecto
+                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+    <!-- Pie de Página -->
+    <footer class="bg-slate-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold mb-4">Portfolio DataAnalytics</h3>
+                <p class="text-slate-400 mb-6">Transformando datos complejos en insights claros y accionables</p>
+                <div class="flex justify-center space-x-6 mb-8">
+                    <a href="mailto:ricardougarte3@gmail.com" class="text-slate-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.89 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                    </a>
+                    <a href="https://linkedin.com/in/ricardo-ugarte" class="text-slate-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/>
+                        </svg>
+                    </a>
+                </div>
+                <p class="text-slate-500 text-sm">
+                    © 2024 Portfolio DataAnalytics. Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Inicializar funcionalidad de la página
+        document.addEventListener('DOMContentLoaded', function() {
+            initMobileMenu();
+            initScrollReveal();
+            initProjectFilters();
+            initProjectModals();
+            initVideoPlayers();
+        });
+
+        // Toggle del Menú Móvil
+        function initMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        }
+
+        // Animación de Revelado al Scroll
+        function initScrollReveal() {
+            const revealElements = document.querySelectorAll('.scroll-reveal');
+            
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+            
+            revealElements.forEach(element => {
+                revealObserver.observe(element);
+            });
+        }
+
+        // Filtros de Proyectos
+        function initProjectFilters() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const projectCards = document.querySelectorAll('.project-card');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Actualizar botón activo
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filtrar proyectos
+                    projectCards.forEach(card => {
+                        const categories = card.getAttribute('data-category');
+                        
+                        if (filter === 'all' || categories.includes(filter)) {
+                            card.style.display = 'block';
+                            anime({
+                                targets: card,
+                                opacity: [0, 1],
+                                translateY: [30, 0],
+                                duration: 500,
+                                easing: 'easeOutQuart'
+                            });
+                        } else {
+                            anime({
+                                targets: card,
+                                opacity: [1, 0],
+                                translateY: [0, -30],
+                                duration: 300,
+                                easing: 'easeInQuart',
+                                complete: function() {
+                                    card.style.display = 'none';
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        }
+
+        // Inicializar reproductores de video
+        function initVideoPlayers() {
+            const videoContainers = document.querySelectorAll('.video-container');
+            
+            videoContainers.forEach(container => {
+                const video = container.querySelector('video');
+                const playOverlay = container.querySelector('.play-overlay');
+                
+                // Reproducir/pausar al hacer clic en el overlay
+                playOverlay.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (video.paused) {
+                        video.play();
+                        playOverlay.style.opacity = '0';
+                    } else {
+                        video.pause();
+                        playOverlay.style.opacity = '1';
+                    }
+                });
+                
+                // Mostrar overlay cuando el video se pausa
+                video.addEventListener('pause', function() {
+                    playOverlay.style.opacity = '1';
+                });
+                
+                // Ocultar overlay cuando el video se reproduce
+                video.addEventListener('play', function() {
+                    playOverlay.style.opacity = '0';
+                });
+                
+                // Prevenir que el clic en el video abra el modal
+                video.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+        }
+
+        // Modales de Proyectos
+        function initProjectModals() {
+            const projectCards = document.querySelectorAll('.project-card');
+            const modal = document.getElementById('project-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalContent = document.getElementById('modal-content');
+            const closeModal = document.getElementById('close-modal');
+            
+            // Datos de proyectos
+            const projectData = {
+                'municipal-claims': {
+                    title: '🚀 Aplicación de Registro y ventas en Power Apps',
+                    content: `
+                        <div class="grid lg:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">Resumen del Proyecto</h3>
+                                <p class="text-slate-600 mb-4">
+                                    Solución integral desarrollada con Power Apps para digitalizar la gestión de reclamos ciudadanos 
+                                    en el área de obras públicas del municipio, reemplazando procesos manuales basados en cuadernos y Excel.
+                                </p>
+                                
+                                <div class="video-container mb-6">
+                                    <video controls class="w-full rounded-lg">
+                                        <source src="./resources/Video-PowerApps-Form.mp4" type="video/mp4">
+                                        Tu navegador no soporta el elemento de video.
+                                    </video>
+                                </div>
+                                
+                                <h4 class="font-semibold mb-2">🧩 Problemática Identificada:</h4>
+                                <ul class="list-disc list-inside text-slate-600 mb-4">
+                                    <li>Gestión manual en cuadernos y hojas Excel individuales</li>
+                                    <li>Pérdida de historial y dificultad para acceder a reclamos antiguos</li>
+                                    <li>Imposibilidad de consolidar información entre zonas</li>
+                                    <li>Falta de análisis para priorizar tareas según urgencia</li>
+                                    <li>Tiempo excesivo para responder consultas o generar reportes</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">🎯 Solución Implementada</h3>
+                                <div class="bg-slate-50 p-6 rounded-xl mb-4">
+                                    <div class="space-y-4">
+                                        <div class="flex items-start space-x-3">
+                                            <div class="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-semibold text-slate-800">Registro Centralizado</h4>
+                                                <p class="text-slate-600 text-sm">Lista SharePoint con campos normalizados</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start space-x-3">
+                                            <div class="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-semibold text-slate-800">App Móvil</h4>
+                                                <p class="text-slate-600 text-sm">Power Apps para registro en campo desde cualquier dispositivo</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start space-x-3">
+                                            <div class="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-semibold text-slate-800">Dashboard Analítico</h4>
+                                                <p class="text-slate-600 text-sm">Power BI con geolocalización y análisis temporal</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h4 class="font-semibold mb-2">🛠️ Tecnologías Utilizadas:</h4>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Power Apps</span>
+                                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Power BI</span>
+                                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">SharePoint Online</span>
+                                    <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm">Power Automate</span>
+                                </div>
+
+                                <h4 class="font-semibold mb-2">✅ Impacto Obtenido</h4>
+                                <ul class="list-disc list-inside text-slate-600 text-sm mb-4">
+                                    <li>Reducción del tiempo de búsqueda de información de días a segundos</li>
+                                    <li>Identificación rápida de zonas críticas con mayor número de reclamos</li>
+                                    <li>Mejora en la asignación de recursos y priorización de obras públicas</li>
+                                    <li>Acceso web inmediato para supervisores sin reportes manuales</li>
+                                    <li>Conservación del historial completo y trazabilidad</li>
+                                </ul>
+                                
+                                <div class="power-bi-embed">
+                                    <a href="https://github.com/Ricardo-Ugarte/Portfolio/tree/9ec8dad4d2d112e962a37e5e14e5000c15fca3df/PowerApps" 
+                                       target="_blank" 
+                                       rel="noopener noreferrer"
+                                       class="block cursor-pointer hover:bg-slate-50 transition-colors p-4 rounded-lg border-2 border-dashed border-purple-200">
+                                        <div class="text-center">
+                                            <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                                </svg>
+                                            </div>
+                                            <p class="font-semibold text-slate-700 mb-2">🔗 Ver Proyecto en GitHub</p>
+                                            <p class="text-sm text-slate-500">Haz clic para explorar el código y documentación completa</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                'sales-dashboard': {
+                    title: 'Dashboard de Gestión de Reclamos Municipales',
+                    content: `
+                        <div class="grid lg:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">Resumen del Proyecto</h3>
+                                <p class="text-slate-600 mb-4">
+                                    Implementar un sistema centralizado para la gestión y análisis de reclamos ciudadanos
+                                    en el área de obras públicas del municipio, eliminando los procesos manuales y mejorando
+                                    la eficiencia operativa.
+                                </p>
+                                <h4 class="font-semibold mb-2">Características Principales:</h4>
+                                <ul class="list-disc list-inside text-slate-600 mb-4">
+                                    <li>Registro digital de reclamos desde cualquier dispositivo</li>
+                                    <li>Mapeo geográfico interactivo de zonas afectadas</li>
+                                    <li>Capacidades de drill-through para análisis detallado</li>
+                                    <li>Filtros dinámicos para segmentación de datos</li>
+                                </ul>
+                                <h4 class="font-semibold mb-2">Tecnologías Utilizadas:</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Power BI</span>
+                                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">DAX</span>
+                                    <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm">SQL Server</span>
+                                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Power Apps</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">💡 Impacto Obtenido</h3>
+                                <div class="bg-slate-50 p-6 rounded-xl mb-4">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="text-center">
+                                            <div class="text-2xl font-bold text-blue-600">65%</div>
+                                            <div class="text-sm text-slate-600">Reducción en tiempo de respuesta</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="text-2xl font-bold text-green-600">40%</div>
+                                            <div class="text-sm text-slate-600">Optimización en Asignación de Recursos</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-slate-600 mb-4">
+                                Transformación digital exitosa que convirtió datos dispersos en información accionable, 
+                                generando mayor eficiencia gubernamental y mejor servicio a la comunidad.
+                                </p>
+                                <div class="power-bi-embed">
+                                    <a href="https://app.powerbi.com/view?r=eyJrIjoiNjdhNjIwZmYtNjY5Yy00ZjM2LWIzZTQtYWEyNjJkZGQyOTE1IiwidCI6ImE3MGQ2YTcyLWQ0MzYtNGNhNy1hYTViLTRhN2EwODk3MDgyNSJ9" 
+                                       target="_blank" 
+                                       rel="noopener noreferrer"
+                                       class="block cursor-pointer hover:bg-slate-50 transition-colors p-4 rounded-lg border-2 border-dashed border-blue-200">
+                                        <div class="text-center">
+                                            <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+                                                </svg>
+                                            </div>
+                                            <p class="font-semibold text-slate-700 mb-2">Reporte Power BI Interactivo</p>
+                                            <p class="text-sm text-slate-500">Haz clic para explorar el dashboard en vivo</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                'inventory-sales': {
+                    title: '📈 Reporte de Ventas e Inventario',
+                    content: `
+                        <div class="grid lg:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">Resumen del Proyecto</h3>
+                                <p class="text-slate-600 mb-4">
+                                    Solución integral de análisis de ventas e inventario que transformó múltiples archivos Excel 
+                                    desorganizados en un dashboard unificado para la toma de decisiones estratégicas.
+                                </p>
+                                <h4 class="font-semibold mb-2">Características Principales:</h4>
+                                <ul class="list-disc list-inside text-slate-600 mb-4">
+                                    <li>Panel de control de KPIs generales: ventas, gastos, utilidad, inversión</li>
+                                    <li>Análisis de rotación y margen por modelo y proveedor</li>
+                                    <li>Sistema de alertas visuales para stock (verde/amarillo/rojo)</li>
+                                    <li>Gráficos de ventas mensuales y tendencias</li>
+                                    <li>Filtros dinámicos por proveedor y modelos</li>
+                                </ul>
+                                <h4 class="font-semibold mb-2">Tecnologías Utilizadas:</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Power BI</span>
+                                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">DAX</span>
+                                    <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm">Excel</span>
+                                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Modelado de Datos</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">💡 Insights Generados</h3>
+                                <div class="bg-slate-50 p-6 rounded-xl mb-4">
+                                    <div class="space-y-3">
+                                        <div class="flex items-start space-x-2">
+                                            <div class="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
+                                            <span class="text-slate-700 text-sm">90% de ventas concentradas en solo 3 modelos</span>
+                                        </div>
+                                        <div class="flex items-start space-x-2">
+                                            <div class="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                                            <span class="text-slate-700 text-sm">Modelo "EK XPRESS II" representa 50% de utilidades</span>
+                                        </div>
+                                        <div class="flex items-start space-x-2">
+                                            <div class="w-2 h-2 bg-amber-600 rounded-full mt-2 flex-shrink-0"></div>
+                                            <span class="text-slate-700 text-sm">Identificación de modelos obsoletos con 0 rotación</span>
+                                        </div>
+                                        <div class="flex items-start space-x-2">
+                                            <div class="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
+                                            <span class="text-slate-700 text-sm">Optimización de compras por proveedor más rentable</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <h4 class="font-semibold mb-2">✅ Impacto Obtenido</h4>
+                                    <ul class="list-disc list-inside text-slate-600 text-sm">
+                                        <li>Visualización en segundos de información que antes tomaba horas</li>
+                                        <li>Eliminación del error humano en cálculos manuales</li>
+                                        <li>Mejor toma de decisiones en compras y precios</li>
+                                        <li>Acceso en tiempo real para todas las áreas de la empresa</li>
+                                    </ul>
+                                </div>
+                                <div class="power-bi-embed">
+                                    <a href="https://app.powerbi.com/view?r=eyJrIjoiNjIzZWY3ZTItZDg0ZS00NzVhLWFiM2ItMTA0Yjk5MDdjZTNhIiwidCI6ImE3MGQ2YTcyLWQ0MzYtNGNhNy1hYTViLTRhN2EwODk3MDgyNSJ9" 
+                                       target="_blank" 
+                                       rel="noopener noreferrer"
+                                       class="block cursor-pointer hover:bg-slate-50 transition-colors p-4 rounded-lg border-2 border-dashed border-green-200">
+                                        <div class="text-center">
+                                            <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0 4h2v-2H3v2zm12 0h2v-2h-2v2zm-4 0h2v-2h-2v2zm-4 0h2v-2H7v2zm8-4h2v-2h-2v2zm-4 0h2v-2h-2v2zm-4 0h2v-2H7v2zm8-4h2v-2h-2v2zm-4 0h2v-2h-2v2zm-4 0h2v-2H7v2z"/>
+                                                </svg>
+                                            </div>
+                                            <p class="font-semibold text-slate-700 mb-2">🔗 Reporte en Power BI</p>
+                                            <p class="text-sm text-slate-500">Haz clic para explorar el dashboard de ventas e inventario</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                'fabric-analytics': {
+                    title: 'Plataforma Unificada de Analytics',
+                    content: `
+                        <div class="grid lg:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">Implementación de Microsoft Fabric</h3>
+                                <p class="text-slate-600 mb-4">
+                                    Plataforma de analytics empresarial construida en Microsoft Fabric, proporcionando 
+                                    almacenamiento de datos unificado, procesamiento en tiempo real e insights potenciados por IA en toda la organización.
+                                </p>
+                                <h4 class="font-semibold mb-2">Componentes de la Arquitectura:</h4>
+                                <ul class="list-disc list-inside text-slate-600 mb-4">
+                                    <li>Almacenamiento de datos unificado con OneLake</li>
+                                    <li>Pipelines de procesamiento de datos en tiempo real</li>
+                                    <li>Insights de datos potenciados por IA con Copilot</li>
+                                    <li>Seguridad y gobierno integrados</li>
+                                    <li>Colaboración multi-workspace</li>
+                                </ul>
+                                <h4 class="font-semibold mb-2">Beneficios Clave:</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Plataforma Unificada</span>
+                                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Analytics en Tiempo Real</span>
+                                    <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm">Integración IA</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">Arquitectura Técnica</h3>
+                                <div class="bg-slate-50 p-6 rounded-xl mb-4">
+                                    <div class="space-y-4">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-4 h-4 bg-blue-600 rounded-full"></div>
+                                            <span class="text-slate-700">Ingesta de Datos (Data Factory)</span>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-4 h-4 bg-green-600 rounded-full"></div>
+                                            <span class="text-slate-700">Almacenamiento de Datos (OneLake)</span>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-4 h-4 bg-amber-600 rounded-full"></div>
+                                            <span class="text-slate-700">Procesamiento de Datos (Synapse)</span>
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-4 h-4 bg-purple-600 rounded-full"></div>
+                                            <span class="text-slate-700">Visualización (Power BI)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-slate-600 mb-4">
+                                    La arquitectura unificada eliminó los silos de datos, redujo el tiempo de procesamiento en un 70%, 
+                                    y proporcionó una única fuente de verdad para todas las necesidades de analytics.
+                                </p>
+                                <div class="power-bi-embed">
+                                    <div class="text-center">
+                                        <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/>
+                                            </svg>
+                                        </div>
+                                        <p class="font-semibold text-slate-700 mb-2">Workspace de Analytics Fabric</p>
+                                        <p class="text-sm text-slate-500">Explora el entorno de analytics unificado</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                'utech-warehouse': {
+                    title: 'UTech Warehouse - Sistema Web Full Stack',
+                    content: `
+                        <div class="grid lg:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">Descripción del Proyecto</h3>
+                                <p class="text-slate-600 mb-4">
+                                    Aplicación web full-stack desarrollada para gestión integral de almacén, 
+                                    incluyendo dashboard interactivo, control de inventario, gestión de productos 
+                                    y reportes en tiempo real.
+                                </p>
+                                
+                                <h4 class="font-semibold mb-2">Características Principales:</h4>
+                                <ul class="list-disc list-inside text-slate-600 mb-4">
+                                    <li>Dashboard interactivo con métricas en tiempo real</li>
+                                    <li>Gestión completa de inventario y stock</li>
+                                    <li>Interfaz responsive y moderna</li>
+                                    <li>Panel administrativo integral</li>
+                                    <li>Gestión de categorías y productos</li>
+                                </ul>
+                                
+                                <h4 class="font-semibold mb-2">Tecnologías Utilizadas:</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">JavaScript</span>
+                                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">HTML5</span>
+                                    <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm">CSS3</span>
+                                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Frontend</span>
+                                    <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">Backend</span>
+                                    <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm">Web App</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold mb-4">Aplicación en Vivo</h3>
+                                <div class="power-bi-embed mb-6">
+                                    <a href="https://ricardo-ugarte.github.io/utech-warehouse/dashboard.html" 
+                                       target="_blank" 
+                                       rel="noopener noreferrer"
+                                       class="block cursor-pointer hover:bg-slate-50 transition-colors p-4 rounded-lg border-2 border-dashed border-blue-200">
+                                        <div class="text-center">
+                                            <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                                </svg>
+                                            </div>
+                                            <p class="font-semibold text-slate-700 mb-2">🔗 Ver Aplicación Web</p>
+                                            <p class="text-sm text-slate-500">Haz clic para explorar el sistema completo</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                
+                                <div class="bg-slate-50 p-6 rounded-xl">
+                                    <h4 class="font-semibold mb-3">🚀 Funcionalidades Técnicas</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-slate-600">Arquitectura:</span>
+                                            <span class="font-semibold">Full Stack Web</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-slate-600">Frontend:</span>
+                                            <span class="font-semibold">HTML, CSS, JavaScript</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-slate-600">Interfaz:</span>
+                                            <span class="font-semibold">Responsive Design</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-slate-600">Dashboard:</span>
+                                            <span class="font-semibold">Tiempo real</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                }
+            };
+            
+            // Abrir modal al hacer clic en tarjeta de proyecto
+            projectCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const projectId = this.getAttribute('data-project');
+                    const project = projectData[projectId];
+                    
+                    if (project) {
+                        modalTitle.textContent = project.title;
+                        modalContent.innerHTML = project.content;
+                        modal.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            });
+            
+            // Cerrar modal
+            closeModal.addEventListener('click', function() {
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
+            
+            // Cerrar modal al hacer clic en el fondo
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

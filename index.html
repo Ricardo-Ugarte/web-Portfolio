@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Analista de Datos - Transformando Datos en Insights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/splitting@1.0.6/dist/splitting.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #1e3a8a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('./resources/hero-bg.jpg') center/cover;
+            opacity: 0.1;
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .data-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(59, 130, 246, 0.6);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #3b82f6;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <!-- Navegación -->
+    <nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-slate-200 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold text-slate-800">Portfolio | Ricardo Ugarte</h1>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Inicio</a>
+                    <a href="about.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Acerca de</a>
+                    <a href="portfolio.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Portfolio</a>
+                    <a href="blog.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Blog</a>
+                    <a href="contact.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Contacto</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-blue-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Menú Móvil -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-200">
+            <div class="px-4 py-2 space-y-2">
+                <a href="#home" class="block py-2 text-slate-600 hover:text-blue-600">Inicio</a>
+                <a href="about.html" class="block py-2 text-slate-600 hover:text-blue-600">Acerca de</a>
+                <a href="portfolio.html" class="block py-2 text-slate-600 hover:text-blue-600">Portfolio</a>
+                <a href="blog.html" class="block py-2 text-slate-600 hover:text-blue-600">Blog</a>
+                <a href="contact.html" class="block py-2 text-slate-600 hover:text-blue-600">Contacto</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sección Hero -->
+    <section id="home" class="hero-bg min-h-screen flex items-center relative">
+        <!-- Partículas Animadas -->
+        <div id="particles-container" class="absolute inset-0 z-1"></div>
+        
+        <div class="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Contenido Izquierdo -->
+                <div class="text-white">
+                    <h1 class="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                        <span class="block" data-splitting>Transformando Datos</span>
+                        <span class="block text-blue-300" data-splitting>en Insights</span>
+                    </h1>
+                    <div class="text-xl lg:text-2xl mb-8 text-blue-100">
+                        <span id="typed-text"></span>
+                    </div>
+                    <p class="text-lg mb-8 text-blue-100 leading-relaxed">
+                        Analista de Datos profesional especializado en Power BI, Microsoft Fabric, SQL, Power Apps y conocimientos en HTML. 
+                        Ayudo a organizaciones a tomar decisiones basadas en datos mediante visualizaciones 
+                        convincentes e insights accionables.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="portfolio.html" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-300 text-center">
+                            Ver Mi Trabajo
+                        </a>
+                        <a href="contact.html" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300 text-center">
+                            Contactarme
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Contenido Derecho - Gráfico Interactivo -->
+                <div class="chart-container rounded-2xl p-6 shadow-2xl">
+                    <h3 class="text-xl font-semibold text-slate-800 mb-4">Dashboard de Analytics en Tiempo Real</h3>
+                    <div id="hero-chart" class="h-80"></div>
+                    <div class="mt-4 text-sm text-slate-600">
+                      
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Métricas Clave -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="text-4xl font-bold text-slate-800 mb-4">Impacto en Números</h2>
+                <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                    Resultados cuantificables de la toma de decisiones basada en datos e implementaciones de análisis avanzados
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="metric-card bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-xl text-center scroll-reveal">
+                    <div class="text-4xl font-bold text-blue-600 mb-2" data-count="120">0</div>
+                    <div class="text-slate-600 font-medium">Dashboards Creados</div>
+                    <div class="text-sm text-slate-500 mt-2">En Power Bi</div>
+                </div>
+                
+                <div class="metric-card bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-xl text-center scroll-reveal">
+                    <div class="text-4xl font-bold text-green-600 mb-2" data-count="85">0</div>
+                    <div class="text-slate-600 font-medium">% Ganancia en Eficiencia</div>
+                    <div class="text-sm text-slate-500 mt-2">Optimización de procesos</div>
+                </div>
+                
+                <div class="metric-card bg-gradient-to-br from-amber-50 to-amber-100 p-8 rounded-xl text-center scroll-reveal">
+                    <div class="text-4xl font-bold text-amber-600 mb-2" data-count="2.5">0</div>
+                    <div class="text-slate-600 font-medium">Millones de Filas Analizadas</div>
+                    <div class="text-sm text-slate-500 mt-2">Procesamiento de big data</div>
+                </div>
+                
+                <div class="metric-card bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-xl text-center scroll-reveal">
+                    <div class="text-4xl font-bold text-purple-600 mb-2" data-count="30">0</div>
+                    <div class="text-slate-600 font-medium">Proyectos Entregados</div>
+                    <div class="text-sm text-slate-500 mt-2">Satisfacción del cliente</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Muestra de Habilidades -->
+    <section class="py-20 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="text-4xl font-bold text-slate-800 mb-4">Experiencia Técnica</h2>
+                <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                    Competente en herramientas y tecnologías líderes para análisis de datos integrales
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <!-- Power BI -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+        <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/New_Power_BI_Logo.svg" alt="Power BI Logo" class="w-10 h-10">
+        </div>
+        <h3 class="text-xl font-semibold text-slate-800 mb-3">Power BI</h3>
+        <p class="text-slate-600 mb-4">Creación avanzada de dashboards, programación DAX y soluciones de reporting empresarial</p>
+        <div class="w-full bg-slate-200 rounded-full h-2">
+            <div class="bg-blue-600 h-2 rounded-full skill-bar" data-width="95%"></div>
+        </div>
+    </div>
+    
+    <!-- Microsoft Fabric -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+        <div class="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+            <img src="https://static.wikia.nocookie.net/logopedia/images/a/aa/Microsoft_Fabric_2023.svg/revision/latest/scale-to-width-down/200?cb=20230528223239" alt="Microsoft Fabric Logo" class="w-10 h-10">
+        </div>
+        <h3 class="text-xl font-semibold text-slate-800 mb-3">Microsoft Fabric</h3>
+        <p class="text-slate-600 mb-4">Plataforma unificada de analytics, integración OneLake y procesamiento de datos en tiempo real</p>
+        <div class="w-full bg-slate-200 rounded-full h-2">
+            <div class="bg-green-600 h-2 rounded-full skill-bar" data-width="90%"></div>
+        </div>
+    </div>
+    
+    <!-- SQL -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+        <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mb-6">
+            <img src="https://img.icons8.com/color/1200/microsoft-sql-server.jpg" alt="SQL Logo" class="w-12 h-12">
+        </div>
+        <h3 class="text-xl font-semibold text-slate-800 mb-3">SQL & Bases de Datos</h3>
+        <p class="text-slate-600 mb-4">Optimización de consultas complejas, diseño de bases de datos y data warehousing</p>
+        <div class="w-full bg-slate-200 rounded-full h-2">
+            <div class="bg-amber-600 h-2 rounded-full skill-bar" data-width="88%"></div>
+        </div>
+    </div>
+    
+    <!-- DAX -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+        <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mb-6">
+            <img src="https://learn.microsoft.com/es-es/training/achievements/dax-power-bi-write-formulas.svg" alt="DAX Logo" class="w-10 h-10">
+        </div>
+        <h3 class="text-xl font-semibold text-slate-800 mb-3">DAX & M Language</h3>
+        <p class="text-slate-600 mb-4">Cálculos avanzados, funciones personalizadas y optimización de rendimiento</p>
+        <div class="w-full bg-slate-200 rounded-full h-2">
+            <div class="bg-red-600 h-2 rounded-full skill-bar" data-width="92%"></div>
+        </div>
+    </div>
+    
+    <!-- Data Visualization -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+        <div class="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+            <img src="https://static.vecteezy.com/system/resources/previews/018/245/961/non_2x/screen-display-and-data-chart-magnifying-glass-solid-icon-png.png" alt="Data Visualization Logo" class="w-10 h-10">
+        </div>
+        <h3 class="text-xl font-semibold text-slate-800 mb-3">Visualización de Datos</h3>
+        <p class="text-slate-600 mb-4">Dashboards interactivos, storytelling y diseño de analytics visuales</p>
+        <div class="w-full bg-slate-200 rounded-full h-2">
+            <div class="bg-purple-600 h-2 rounded-full skill-bar" data-width="94%"></div>
+        </div>
+    </div>
+
+    <!-- Power Apps -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+        <div class="w-16 h-16 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
+            <img src="https://img.icons8.com/fluent/1200/microsoft-power-apps.jpg" alt="Power Apps Logo" class="w-12 h-12">
+        </div>
+        <h3 class="text-xl font-semibold text-slate-800 mb-3">Power Apps</h3>
+        <p class="text-slate-600 mb-4">Creación de Aplicaciones, formularios, registro de data</p>
+        <div class="w-full bg-slate-200 rounded-full h-2">
+            <div class="bg-indigo-600 h-2 rounded-full skill-bar" data-width="85%"></div>
+        </div>
+    </div>
+</div>
+
+    <!-- Llamada a la Acción -->
+    <section class="py-20 bg-blue-600">
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-white mb-6 scroll-reveal">Contacto</h2>
+            <p class="text-xl text-blue-100 mb-8 scroll-reveal">
+                Tienes un proyecto en mente? Veamos cómo podemos convertir tus datos en información clara y procesable.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center scroll-reveal">
+                <a href="portfolio.html" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-300">
+                    Explorar Mi Portfolio
+                </a>
+                <a href="contact.html" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300">
+                    Iniciar Conversación
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pie de Página -->
+    <footer class="bg-slate-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold mb-4">Portfolio | Ricardo Ugarte</h3>
+                <p class="text-slate-400 mb-6">Transformación de datos en información clara y procesable</p>
+                <div class="flex justify-center space-x-6 mb-8">
+                    <a href="mailto:analyst@example.com" class="text-slate-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.89 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                    </a>
+                    <a href="https://linkedin.com" class="text-slate-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/>
+                        </svg>
+                    </a>
+                </div>
+                <p class="text-slate-500 text-sm">
+                    © 2025 Portfolio Ricardo Ugarte. Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>

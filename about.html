@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre mi - Analista de datos Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #3b82f6;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .skill-meter {
+            background: linear-gradient(90deg, #3b82f6 0%, #1e3a8a 100%);
+            height: 8px;
+            border-radius: 4px;
+            transition: width 1.5s ease-in-out;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            background: #3b82f6;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px #3b82f6;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1.5rem;
+            width: 2px;
+            height: calc(100% - 1rem);
+            background: #e2e8f0;
+        }
+        
+        .timeline-item:last-child::after {
+            display: none;
+        }
+        
+        .profile-image {
+            filter: grayscale(20%) contrast(110%);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-image:hover {
+            filter: grayscale(0%) contrast(100%);
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-slate-200 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="text-xl font-bold text-slate-800"> Portfolio Analista de Datos</a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Home</a>
+                    <a href="about.html" class="nav-link text-blue-600 font-medium">About</a>
+                    <a href="portfolio.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Portfolio</a>
+                    <a href="blog.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Blog</a>
+                    <a href="contact.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-blue-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-200">
+            <div class="px-4 py-2 space-y-2">
+                <a href="index.html" class="block py-2 text-slate-600 hover:text-blue-600">Home</a>
+                <a href="about.html" class="block py-2 text-blue-600">About</a>
+                <a href="portfolio.html" class="block py-2 text-slate-600 hover:text-blue-600">Portfolio</a>
+                <a href="blog.html" class="block py-2 text-slate-600 hover:text-blue-600">Blog</a>
+                <a href="contact.html" class="block py-2 text-slate-600 hover:text-blue-600">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-blue-50 to-indigo-100 pt-24 pb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Profile Image -->
+                <div class="scroll-reveal">
+                    <div class="relative">
+                        <img src="./resources/profile-photo.jpg" alt="Professional Data Analyst" 
+                             class="profile-image w-full max-w-md mx-auto rounded-2xl shadow-2xl">
+                        <div class="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-lg">
+                            <div class="text-2xl font-bold text-blue-600">3+</div>
+                            <div class="text-sm text-slate-600">Años de Experiencia</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Introduction -->
+                <div class="scroll-reveal">
+                    <h1 class="text-5xl font-bold text-slate-800 mb-6">Sobre mi</h1>
+                    <p class="text-xl text-slate-600 mb-6 leading-relaxed text-justify">
+                        Soy Analista de Datos y Desarrollador de Aplicaciones, especializado en Power BI, SQL Server 
+                        y herramientas de automatización. Construyo soluciones ETL, gestiono flujos de datos y diseño 
+                        dashboards interactivos que facilitan decisiones estratégicas en áreas como tecnología, 
+                        finanzas y operaciones.
+                    </p>
+                    <p class="text-lg text-slate-600 mb-8 leading-relaxed text-justify">
+                        Creo que los datos es la clave para impulsar el cambio organizacional. Ayuda a la toma de decisiones 
+                        informadas que impacta en los resultados finales.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <span class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-medium">Power BI</span>
+                        <span class="bg-green-100 text-green-800 px-4 py-2 rounded-full font-medium">Microsoft Fabric</span>
+                        <span class="bg-amber-100 text-amber-800 px-4 py-2 rounded-full font-medium">Data Visualization</span>
+                        <span class="bg-purple-100 text-purple-800 px-4 py-2 rounded-full font-medium">Inteligencia de Negocio</span>
+                        <span class="bg-red-100 text-red-800 px-4 py-2 rounded-full font-medium">SQL Server</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Dashboard -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="text-4xl font-bold text-slate-800 mb-4">Skills Dashboard</h2>
+                <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                    Descripción general completa de mis competencias técnicas
+                </p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- Skills Chart -->
+                <div class="scroll-reveal">
+                    <div class="bg-slate-50 p-8 rounded-2xl">
+                        <h3 class="text-2xl font-semibold text-slate-800 mb-6">Habilidades Técnicas</h3>
+                        <div id="skills-chart" class="h-96"></div>
+                    </div>
+                </div>
+                
+                <!-- Detailed Skills -->
+                <div class="scroll-reveal">
+                    <div class="space-y-8">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-lg font-semibold text-slate-800">Power BI & DAX</h4>
+                                <span class="text-blue-600 font-bold">95%</span>
+                            </div>
+                            <div class="bg-slate-200 rounded-full h-3">
+                                <div class="skill-meter" data-width="90%"></div>
+                            </div>
+                            <p class="text-sm text-slate-600 mt-2">Diseño de paneles, calculos DAX, Modelado de datos, optimización del rendimiento</p>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-lg font-semibold text-slate-800">Microsoft Fabric</h4>
+                                <span class="text-green-600 font-bold">70%</span>
+                            </div>
+                            <div class="bg-slate-200 rounded-full h-3">
+                                <div class="skill-meter" data-width="90%"></div>
+                            </div>
+                            <p class="text-sm text-slate-600 mt-2">Arquitectura OneLake, análisis en tiempo real, canalizaciones de ingeniería de datos</p>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-lg font-semibold text-slate-800">SQL & diseño de bases de datos</h4>
+                                <span class="text-amber-600 font-bold">88%</span>
+                            </div>
+                            <div class="bg-slate-200 rounded-full h-3">
+                                <div class="skill-meter" data-width="88%"></div>
+                            </div>
+                            <p class="text-sm text-slate-600 mt-2">Optimización de consultas, almacenamiento de datos, procesos ETL</p>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-lg font-semibold text-slate-800">Visualización de datos</h4>
+                                <span class="text-purple-600 font-bold">94%</span>
+                            </div>
+                            <div class="bg-slate-200 rounded-full h-3">
+                                <div class="skill-meter" data-width="94%"></div>
+                            </div>
+                            <p class="text-sm text-slate-600 mt-2">Paneles interactivos, narración visual, principios de diseño de UX</p>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-lg font-semibold text-slate-800">Inteligencia de negocio</h4>
+                                <span class="text-red-600 font-bold">92%</span>
+                            </div>
+                            <div class="bg-slate-200 rounded-full h-3">
+                                <div class="skill-meter" data-width="92%"></div>
+                            </div>
+                            <p class="text-sm text-slate-600 mt-2">Planificación estratégica, desarrollo de KPI, comunicación con las partes interesadas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Professional Experience -->
+<section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 scroll-reveal">
+            <h2 class="text-4xl font-bold text-slate-800 mb-4">Experiencia Profesional</h2>
+            <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                Trayectoria en análisis de datos aplicado a diversos sectores
+            </p>
+        </div>
+        
+        <div class="max-w-4xl mx-auto">
+            <div class="space-y-12">
+                <!-- Analista de Datos -->
+                <div class="timeline-card opacity-0 transform translate-y-8 transition-all duration-700 ease-out">
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-blue-500">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                            <h3 class="text-xl font-semibold text-slate-800">Analista de Datos</h3>
+                            <span class="text-blue-600 font-medium bg-blue-50 px-3 py-1 rounded-full text-sm">2023 - Present</span>
+                        </div>
+                        <p class="text-blue-600 font-medium mb-3">Gold Data</p>
+                        <ul class="text-slate-600 mb-4 list-disc list-inside space-y-2">
+                            <li>Diseñé dashboards financieros en Power BI Apps para monitoreo de transacciones en tiempo real.</li>
+                            <li>Implementé procesos ETL con SQL Server y Power Query, integrando datos de fuentes locales y en la nube.</li>
+                            <li>Desarrollé informes interactivos en Power BI para visualizar tendencias a partir de encuestas.</li>
+                            <li>Optimicé dashboards con DAX y Performance Analyzer para mejorar rendimiento.</li>
+                        </ul>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Power BI</span>
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Microsoft Fabric</span>
+                            <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm">SQL</span>
+                            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">Figma</span>
+                            <span class="bg-slate-100 text-slate-800 px-3 py-1 rounded-full text-sm">Power Apps</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Proyectista / Analista de Datos -->
+                <div class="timeline-card opacity-0 transform translate-y-8 transition-all duration-700 ease-out" style="transition-delay: 100ms">
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-blue-500">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                            <h3 class="text-xl font-semibold text-slate-800">Proyectista / Analista de Datos</h3>
+                            <span class="text-blue-600 font-medium bg-blue-50 px-3 py-1 rounded-full text-sm">2019 - Present</span>
+                        </div>
+                        <p class="text-blue-600 font-medium mb-3">Municipalidad de Vicente López.</p>
+                        <ul class="text-slate-600 mb-4 list-disc list-inside space-y-2">
+                            <li>Implementé herramientas de seguimiento en Power BI con diagramas de Gantt y curvas de inversión para supervisión de obras.</li>
+                            <li>Implementé procesos ETL con SQL Server y Power Query, integrando datos de fuentes locales y en la nube.</li>
+                            <li>Desarrollé informes interactivos en Power BI para visualizar tendencias a partir de encuestas.</li>
+                            <li>Optimicé dashboards con DAX y Performance Analyzer para mejorar rendimiento.</li>
+                        </ul>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">Power Bi</span>
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">Microsoft Fabric</span>
+                            <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm">Excel Avanzado</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analista de Costos -->
+                <div class="timeline-card opacity-0 transform translate-y-8 transition-all duration-700 ease-out" style="transition-delay: 200ms">
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-blue-500">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                            <h3 class="text-xl font-semibold text-slate-800">Analista de Costos</h3>
+                            <span class="text-blue-600 font-medium bg-blue-50 px-3 py-1 rounded-full text-sm">2018 - 2019</span>
+                        </div>
+                        <p class="text-blue-600 font-medium mb-3">Raiper Luminosos SRL.</p>
+                        </p>
+                        <ul class="text-slate-600 mb-4 list-disc list-inside space-y-3">
+                            <li class="leading-relaxed">
+                                <span class="font-medium">Automaticé análisis de costos</span> con Excel y Power Query, 
+                                simplificando la elaboración de presupuestos y costos de productos.
+                            </li>
+                            <li class="leading-relaxed">
+                                <span class="font-medium">Generé reportes financieros</span> en Excel para seguimiento 
+                                y control de proyectos.
+                            </li>
+                        </ul>
+                        <div class="flex flex-wrap gap-2 pt-2">
+                            <span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm">Excel Avanzado</span>
+                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">Power Query</span>
+                        </div>
+                    </div>
+                </div>
+                
+             </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Enhanced scroll animation for timeline cards
+function initTimelineAnimation() {
+    const timelineCards = document.querySelectorAll('.timeline-card');
+    
+    const cardObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }, parseInt(entry.target.style.transitionDelay || 0));
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    timelineCards.forEach(card => {
+        cardObserver.observe(card);
+    });
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initTimelineAnimation();
+});
+
+// Re-initialize when coming from another page
+if (document.readyState === 'complete') {
+    initTimelineAnimation();
+}
+</script>
+
+<style>
+.timeline-card {
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+/* Optional: Add connecting lines for timeline effect */
+.space-y-12 > div:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -3rem;
+    width: 2px;
+    height: 3rem;
+    background: linear-gradient(to bottom, #3b82f6, #10b981);
+    transform: translateX(-50%);
+}
+
+.space-y-12 {
+    position: relative;
+}
+
+.space-y-12 > div {
+    position: relative;
+}
+</style>
+
+    <!-- Educación -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="text-4xl font-bold text-slate-800 mb-4">Educación y Certificados</h2>
+                <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                    Aprendizaje continuo y desarrollo profesional en analítica de datos
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Educación -->
+                <div class="scroll-reveal">
+                    <h3 class="text-2xl font-semibold text-slate-800 mb-6">Educación</h3>
+                    <div class="space-y-6">
+                        <div class="bg-slate-50 p-6 rounded-xl">
+                            <h4 class="text-lg font-semibold text-slate-800">Ingeniero Civil</h4>
+                            <p class="text-blue-600 font-medium">Universidad Politécnica de Maracaibo. • 2014</p>
+                            <p class="text-slate-600 mt-2">Especializado en técnicas de análisis estadístico, aprendizaje automático y visualización de datos.</p>
+                        </div>
+                        
+                        </div>
+                </div>
+                
+                <!-- Certificados -->
+                <div class="scroll-reveal">
+                    <h3 class="text-2xl font-semibold text-slate-800 mb-6">Certificados</h3>
+                    <div class="space-y-6">
+                        <div class="bg-slate-50 p-6 rounded-xl">
+                            <h4 class="text-lg font-semibold text-slate-800">Fundamentos profesionales del análisis de datos, por Microsoft y LinkedIn</h4>
+                            <p class="text-blue-600 font-medium">Microsoft y LinkedIn • 2023</p>
+                            <p class="text-slate-600 mt-2">Dominio de Power BI, DAX y procesos ETL para la creación de dashboards empresariales y visualización de datos    .</p>
+                        </div>
+                        
+                        <div class="bg-slate-50 p-6 rounded-xl">
+                            <h4 class="text-lg font-semibold text-slate-800">Análisis de Datos y Business Intelligence </h4>
+                            <p class="text-blue-600 font-medium">Udemy • 2023</p>
+                            <p class="text-slate-600 mt-2">Desarrollo de dashboards interactivos, modelado de datos y medidas DAX avanzadas..</p>
+                        </div>
+                        
+                        <div class="bg-slate-50 p-6 rounded-xl">
+                            <h4 class="text-lg font-semibold text-slate-800">Modelamiento y Análisis de Datos con Excel y Power BI, Business Intelligence</h4>
+                            <p class="text-blue-600 font-medium">Acadevor • 2023</p>
+                            <p class="text-slate-600 mt-2">Optimización de modelos tabulares y desarrollo de cálculos avanzados con DAX.</p>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-xl">
+                            <h4 class="text-lg font-semibold text-slate-800">Modelamiento y Análisis de Datos con Excel y Power BI, Business Intelligence</h4>
+                            <p class="text-blue-600 font-medium">Acadevor • 2023</p>
+                            <p class="text-slate-600 mt-2">Optimización de modelos tabulares y desarrollo de cálculos avanzados con DAX.</p>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-20 bg-blue-600">
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-white mb-6 scroll-reveal">Contacto</h2>
+            <p class="text-xl text-blue-100 mb-8 scroll-reveal">
+                Tienes un proyecto en mente? Hablemos sobre cómo puedo ayudarte.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center scroll-reveal">
+                <a href="portfolio.html" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-300">
+                    Ver mis trabajos
+                </a>
+                <a href="contact.html" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300">
+                    Póngase en contacto
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold mb-4">Portfolio Analista de Datos</h3>
+                <p class="text-slate-400 mb-6">Transformación de datos en información clara y procesable</p>
+                <div class="flex justify-center space-x-6 mb-8">
+                    <a href="mailto:ricardougarte3@gmail.com" class="text-slate-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.89 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                    </a>
+                    <a href="https://www.linkedin.com/in/ricardo-ugarte" class="text-slate-400 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/>
+                        </svg>
+                    </a>
+                </div>
+                <p class="text-slate-500 text-sm">
+                    © 2024 Ricardo Ugarte | Analista de datos | Portfolio. Todos los derechos reservados.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize page-specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            initMobileMenu();
+            initScrollReveal();
+            initSkillsChart();
+            initSkillMeters();
+        });
+
+        // Mobile Menu Toggle
+        function initMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        }
+
+        // Scroll Reveal Animation
+        function initScrollReveal() {
+            const revealElements = document.querySelectorAll('.scroll-reveal');
+            
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+            
+            revealElements.forEach(element => {
+                revealObserver.observe(element);
+            });
+        }
+
+        // Skills Chart
+        function initSkillsChart() {
+            const chartContainer = document.getElementById('skills-chart');
+            if (!chartContainer) return;
+            
+            const chart = echarts.init(chartContainer);
+            
+            const option = {
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left'
+                },
+                series: [
+                    {
+                        name: 'Skills',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '18',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            { value: 95, name: 'Power BI & DAX', itemStyle: { color: '#3b82f6' } },
+                            { value: 70, name: 'Microsoft Fabric', itemStyle: { color: '#10b981' } },
+                            { value: 88, name: 'SQL Server', itemStyle: { color: '#f59e0b' } },
+                            { value: 94, name: 'Visualización de datos', itemStyle: { color: '#8b5cf6' } },
+                            { value: 92, name: 'Business Intelligence', itemStyle: { color: '#ef4444' } }
+                        ]
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            
+            window.addEventListener('resize', function() {
+                chart.resize();
+            });
+        }
+
+        // Skill Meters Animation
+        function initSkillMeters() {
+            const skillMeters = document.querySelectorAll('.skill-meter');
+            
+            const meterObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const meter = entry.target;
+                        const width = meter.getAttribute('data-width');
+                        
+                        setTimeout(() => {
+                            meter.style.width = width;
+                        }, 500);
+                    }
+                });
+            }, {
+                threshold: 0.5
+            });
+            
+            skillMeters.forEach(meter => {
+                meterObserver.observe(meter);
+            });
+        }
+    </script>
+</body>
+</html>
