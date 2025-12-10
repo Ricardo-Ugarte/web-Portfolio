@@ -651,7 +651,22 @@
             </div>
         </div>
     </footer>
-
+  <!-- === AGREGAR AQUÍ EL MODAL === -->
+    <!-- Modal para detalles de proyectos -->
+    <div id="project-modal" class="modal">
+        <div class="modal-content w-full max-w-6xl p-6">
+            <div class="flex justify-between items-start mb-6">
+                <h2 id="modal-title" class="text-2xl font-bold text-slate-800"></h2>
+                <button id="close-modal" class="text-slate-500 hover:text-slate-800 p-2 rounded-full hover:bg-slate-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="modal-content" class="text-slate-600"></div>
+        </div>
+    </div>
+    
     <script>
         // Inicializar funcionalidad de la página
         document.addEventListener('DOMContentLoaded', function() {
