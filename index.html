@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Analista de Datos - Transformando Datos en Insights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script src="https://unpkg.com/splitting@1.0.6/dist/splitting.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/splitting@1.0.6/dist/splitting.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #1e3a8a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('./resources/hero-bg.jpg') center/cover;
+            opacity: 0.1;
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .data-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(59, 130, 246, 0.6);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #3b82f6;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <!-- Navegación -->
+    <nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-slate-200 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <img src="./resources/profile-photo.jpg" alt="Ricardo Ugarte"
+                         style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid #2563eb;">
+                    <h1 class="text-xl font-bold text-slate-800">Ricardo <span style="color:#2563eb;">Ugarte</span></h1>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Inicio</a>
+                    <a href="about.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Acerca de</a>
+                    <a href="portfolio.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Portfolio</a>
+                    <a href="blog.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Blog</a>
+                    <a href="contact.html" class="nav-link text-slate-600 hover:text-blue-600 font-medium">Contacto</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-blue-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Menú Móvil -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-200">
+            <div class="px-4 py-2 space-y-2">
+                <a href="index.html" class="block py-2 text-slate-600 hover:text-blue-600">Inicio</a>
+                <a href="about.html" class="block py-2 text-slate-600 hover:text-blue-600">Acerca de</a>
+                <a href="portfolio.html" class="block py-2 text-slate-600 hover:text-blue-600">Portfolio</a>
+                <a href="blog.html" class="block py-2 text-slate-600 hover:text-blue-600">Blog</a>
+                <a href="contact.html" class="block py-2 text-slate-600 hover:text-blue-600">Contacto</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== HERO: partículas + 2 columnas (texto + carrusel dispositivos) ===== -->
+    <style>
+      .hero-particles {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding-top: 64px;
+  background: #0c1220;
+}
+.hero-particles::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(rgba(12,18,32,0.85) 0%, rgba(12,18,32,0.80) 50%, rgba(12,18,32,0.90) 100%),
+    url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1600&q=80') center/cover no-repeat;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+      #hero-canvas {
+        position: absolute; inset: 0;
+        width: 100%; height: 100%;
+        z-index: 1; pointer-events: none;
+      }
+      .hero-inner {
+        position: relative; z-index: 2;
+        max-width: 1200px; margin: 0 auto;
+        padding: 4rem 2rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+        width: 100%;
+      }
+      /* LEFT TEXT */
+      .hero-tag {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: rgba(37,99,235,0.2);
+        border: 1px solid rgba(96,165,250,0.35);
+        color: #93c5fd;
+        font-size: 0.78rem; font-weight: 700;
+        letter-spacing: 0.1em; text-transform: uppercase;
+        padding: 6px 18px; border-radius: 100px;
+        margin-bottom: 1.5rem;
+      }
+      .hero-tag::before {
+        content: ''; width: 7px; height: 7px;
+        background: #60a5fa; border-radius: 50%;
+        animation: blink-pt 2s ease-in-out infinite;
+        flex-shrink: 0;
+      }
+      @keyframes blink-pt { 0%,100%{opacity:1} 50%{opacity:0.25} }
+      .hero-h1 {
+        font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+        font-weight: 800; color: #fff;
+        line-height: 1.1; margin-bottom: 1rem;
+        text-shadow: 0 2px 24px rgba(0,0,0,0.5);
+      }
+      .hero-h1 span { color: #60a5fa; }
+      .hero-typed-wrap {
+        font-size: 1.15rem; color: #60a5fa;
+        font-weight: 600; min-height: 1.8rem;
+        margin-bottom: 1rem;
+      }
+      .hero-sub {
+        font-size: 1rem; color: rgba(255,255,255,0.7);
+        line-height: 1.7; margin-bottom: 2rem;
+        max-width: 480px;
+      }
+      .hero-actions {
+        display: flex; gap: 1rem; flex-wrap: wrap;
+        margin-bottom: 2.5rem;
+      }
+      .hero-btn-primary {
+        background: #2563eb; color: #fff;
+        padding: 13px 32px; border-radius: 8px;
+        font-size: 1rem; font-weight: 700;
+        text-decoration: none;
+        transition: background 0.2s, transform 0.15s;
+        display: inline-block;
+      }
+      .hero-btn-primary:hover { background: #1d4ed8; transform: translateY(-2px); }
+      .hero-btn-secondary {
+        background: transparent; color: #fff;
+        padding: 13px 32px; border-radius: 8px;
+        font-size: 1rem; font-weight: 700;
+        border: 2px solid rgba(255,255,255,0.45);
+        text-decoration: none;
+        transition: background 0.2s, transform 0.15s;
+        display: inline-block;
+      }
+      .hero-btn-secondary:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+      .hero-slider-dots {
+        display: flex; gap: 8px;
+      }
+      .hero-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+        transition: all 0.3s; cursor: pointer;
+      }
+      .hero-dot.active { background: #2563eb; width: 24px; border-radius: 4px; }
+
+      /* RIGHT: Device Carousel */
+      .device-scene {
+        width: 380px; height: 460px;
+        perspective: 1100px;
+        margin: 0 auto; position: relative;
+      }
+      .device-carousel {
+        width: 100%; height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        animation: spinDevices 16s linear infinite;
+      }
+      @keyframes spinDevices {
+        from { transform: rotateY(0deg); }
+        to   { transform: rotateY(360deg); }
+      }
+      .device-carousel:hover { animation-play-state: paused; }
+      .device-item {
+        position: absolute;
+        left: 50%; top: 50%;
+        transform-style: preserve-3d;
+        backface-visibility: visible;
+      }
+      .device-item.is-desktop {
+        width: 280px; height: 190px;
+        margin-left: -140px; margin-top: -95px;
+      }
+      .device-item.is-phone {
+        width: 160px; height: 300px;
+        margin-left: -80px; margin-top: -150px;
+      }
+      .device-item:nth-child(1) { transform: rotateY(0deg)   translateZ(195px); }
+      .device-item:nth-child(2) { transform: rotateY(90deg)  translateZ(195px); }
+      .device-item:nth-child(3) { transform: rotateY(180deg) translateZ(195px); }
+      .device-item:nth-child(4) { transform: rotateY(270deg) translateZ(195px); }
+      .desktop-frame {
+        width: 100%; height: 100%;
+        background: #1e293b;
+        border: 2.5px solid #334155;
+        border-radius: 10px 10px 0 0;
+        display: flex; flex-direction: column;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 0 1px #0f172a;
+        overflow: hidden;
+      }
+      .desktop-topbar {
+        height: 18px; background: #0f172a;
+        display: flex; align-items: center;
+        padding: 0 8px; gap: 5px; flex-shrink: 0;
+      }
+      .desktop-dot { width: 6px; height: 6px; border-radius: 50%; }
+      .desktop-screen { flex: 1; background: #f8fafc; overflow: hidden; }
+      .desktop-stand { width:60%;height:8px;background:#1e293b;margin:0 auto;border-radius:0 0 6px 6px;border:2px solid #334155;border-top:none; }
+      .desktop-base  { width:80%;height:3px;background:#334155;margin:0 auto;border-radius:2px; }
+      .phone-frame {
+        width: 100%; height: 100%;
+        background: #1e293b;
+        border: 2.5px solid #334155;
+        border-radius: 24px;
+        display: flex; flex-direction: column;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 0 1px #0f172a;
+        overflow: hidden;
+      }
+      .phone-notch { height:22px;background:#0f172a;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+      .phone-notch-pill { width:50px;height:8px;background:#1e293b;border-radius:4px; }
+      .phone-screen-area { flex:1;background:#f8fafc;overflow:hidden; }
+      .phone-home-bar { height:18px;background:#0f172a;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+      .phone-home-pill { width:40px;height:4px;background:#475569;border-radius:2px; }
+      .device-label {
+        position:absolute; bottom:-28px; left:50%;
+        transform:translateX(-50%);
+        white-space:nowrap; font-size:0.63rem; font-weight:700;
+        letter-spacing:0.08em; text-transform:uppercase;
+        color:#94a3b8; display:flex; align-items:center; gap:5px;
+      }
+      .device-label img { width:13px;height:13px;object-fit:contain;border-radius:3px; }
+
+      @media (max-width: 900px) {
+        .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
+        .device-scene { width: 300px; height: 360px; }
+        .device-item:nth-child(1) { transform: rotateY(0deg)   translateZ(155px); }
+        .device-item:nth-child(2) { transform: rotateY(90deg)  translateZ(155px); }
+        .device-item:nth-child(3) { transform: rotateY(180deg) translateZ(155px); }
+        .device-item:nth-child(4) { transform: rotateY(270deg) translateZ(155px); }
+      }
+    </style>
+
+    <section id="home" class="hero-particles">
+      <canvas id="hero-canvas"></canvas>
+      <div class="hero-inner">
+
+        <!-- LEFT: texto -->
+        <div>
+          <div class="hero-tag">Data Analyst </div>
+          <h1 class="hero-h1">
+            Convierte los datos en <br><span>decisiones claras</span>
+          </h1>
+          <div class="hero-typed-wrap"><span id="typed-text"></span></div>
+          <p class="hero-sub">
+            Ingeniero de formación, analista de datos por elección.
+          </p>
+          <div class="hero-actions">
+            <a href="portfolio.html" class="hero-btn-primary">Ver mi portfolio</a>
+            <a href="contact.html"   class="hero-btn-secondary">Contactarme</a>
+          </div>
+          <div class="hero-slider-dots">
+            <div class="hero-dot"></div>
+            <div class="hero-dot active"></div>
+            <div class="hero-dot"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT: carrusel 3D de dispositivos -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1.5rem;">
+          <p style="color:#94a3b8;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;">
+            Resultado Final
+          </p>
+          <div class="device-scene">
+            <div class="device-carousel">
+
+              <!-- 1: Power BI — Desktop -->
+              <div class="device-item is-desktop">
+                <div style="position:relative;width:100%;">
+                  <div class="desktop-frame">
+                    <div class="desktop-topbar">
+                      <div class="desktop-dot" style="background:#ef4444"></div>
+                      <div class="desktop-dot" style="background:#f59e0b"></div>
+                      <div class="desktop-dot" style="background:#22c55e"></div>
+                      <div style="flex:1;background:#1e3a5f;border-radius:3px;height:8px;margin-left:6px;display:flex;align-items:center;padding:0 6px;">
+                        <span style="font-size:5px;color:#93c5fd;font-family:monospace;">app.powerbi.com · Reporte de Ventas</span>
+                      </div>
+                    </div>
+                    <div class="desktop-screen">
+                      <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+                        <rect width="280" height="168" fill="#f0f4f8"/>
+                        <rect x="0" y="0" width="36" height="168" fill="#252d3d"/>
+                        <rect x="8" y="12" width="20" height="20" rx="4" fill="#f3b511" opacity="0.9"/>
+                        <rect x="10" y="40" width="16" height="3" rx="1.5" fill="#475569"/>
+                        <rect x="10" y="48" width="16" height="3" rx="1.5" fill="#334155"/>
+                        <rect x="10" y="56" width="16" height="3" rx="1.5" fill="#334155"/>
+                        <rect x="10" y="64" width="16" height="3" rx="1.5" fill="#334155"/>
+                        <rect x="36" y="0" width="244" height="22" fill="#fff"/>
+                        <text x="44" y="14" font-size="5" fill="#1e3a5f" font-weight="bold" font-family="sans-serif">Ventas · Resumen</text>
+                        <rect x="230" y="6" width="40" height="10" rx="3" fill="#f3b511" opacity="0.2"/>
+                        <text x="234" y="13" font-size="4.5" fill="#92610a" font-family="sans-serif">Compartir</text>
+                        <rect x="40" y="27" width="52" height="28" rx="4" fill="#fff"/>
+                        <text x="44" y="37" font-size="4" fill="#64748b" font-family="sans-serif">Ventas Totales</text>
+                        <text x="44" y="49" font-size="8" fill="#1e3a5f" font-weight="bold" font-family="sans-serif">$482K</text>
+                        <text x="72" y="49" font-size="4" fill="#22c55e" font-family="sans-serif">↑12%</text>
+                        <rect x="97" y="27" width="52" height="28" rx="4" fill="#fff"/>
+                        <text x="101" y="37" font-size="4" fill="#64748b" font-family="sans-serif">Clientes</text>
+                        <text x="101" y="49" font-size="8" fill="#1e3a5f" font-weight="bold" font-family="sans-serif">1,284</text>
+                        <text x="126" y="49" font-size="4" fill="#22c55e" font-family="sans-serif">↑8%</text>
+                        <rect x="154" y="27" width="52" height="28" rx="4" fill="#fff"/>
+                        <text x="158" y="37" font-size="4" fill="#64748b" font-family="sans-serif">Margen</text>
+                        <text x="158" y="49" font-size="8" fill="#1e3a5f" font-weight="bold" font-family="sans-serif">34.2%</text>
+                        <text x="187" y="49" font-size="4" fill="#ef4444" font-family="sans-serif">↓2%</text>
+                        <rect x="211" y="27" width="52" height="28" rx="4" fill="#fff"/>
+                        <text x="215" y="37" font-size="4" fill="#64748b" font-family="sans-serif">Órdenes</text>
+                        <text x="215" y="49" font-size="8" fill="#1e3a5f" font-weight="bold" font-family="sans-serif">3,891</text>
+                        <text x="244" y="49" font-size="4" fill="#22c55e" font-family="sans-serif">↑5%</text>
+                        <rect x="40" y="60" width="130" height="70" rx="4" fill="#fff"/>
+                        <text x="46" y="70" font-size="4.5" fill="#1e3a5f" font-weight="bold" font-family="sans-serif">Ventas por Mes</text>
+                        <rect x="52" y="120" width="10" height="28" rx="2" fill="#f3b511"/>
+                        <rect x="66" y="108" width="10" height="40" rx="2" fill="#f3b511"/>
+                        <rect x="80" y="100" width="10" height="48" rx="2" fill="#f3b511"/>
+                        <rect x="94" y="112" width="10" height="36" rx="2" fill="#f3b511" opacity="0.7"/>
+                        <rect x="108" y="92" width="10" height="56" rx="2" fill="#2563eb"/>
+                        <rect x="122" y="86" width="10" height="62" rx="2" fill="#2563eb"/>
+                        <rect x="136" y="80" width="10" height="68" rx="2" fill="#2563eb" opacity="0.8"/>
+                        <text x="53" y="128" font-size="3.5" fill="#94a3b8" font-family="sans-serif">Jul</text>
+                        <text x="67" y="128" font-size="3.5" fill="#94a3b8" font-family="sans-serif">Ago</text>
+                        <text x="81" y="128" font-size="3.5" fill="#94a3b8" font-family="sans-serif">Sep</text>
+                        <text x="95" y="128" font-size="3.5" fill="#94a3b8" font-family="sans-serif">Oct</text>
+                        <text x="109" y="128" font-size="3.5" fill="#2563eb" font-family="sans-serif">Nov</text>
+                        <text x="123" y="128" font-size="3.5" fill="#2563eb" font-family="sans-serif">Dic</text>
+                        <text x="137" y="128" font-size="3.5" fill="#2563eb" font-family="sans-serif">Ene</text>
+                        <rect x="175" y="60" width="88" height="70" rx="4" fill="#fff"/>
+                        <text x="181" y="70" font-size="4.5" fill="#1e3a5f" font-weight="bold" font-family="sans-serif">Por Categoría</text>
+                        <circle cx="214" cy="100" r="22" fill="none" stroke="#e2e8f0" stroke-width="10"/>
+                        <circle cx="214" cy="100" r="22" fill="none" stroke="#f3b511" stroke-width="10" stroke-dasharray="55 83" stroke-dashoffset="0"/>
+                        <circle cx="214" cy="100" r="22" fill="none" stroke="#2563eb" stroke-width="10" stroke-dasharray="30 108" stroke-dashoffset="-55"/>
+                        <circle cx="214" cy="100" r="22" fill="none" stroke="#22c55e" stroke-width="10" stroke-dasharray="20 118" stroke-dashoffset="-85"/>
+                        <text x="210" y="103" font-size="6" fill="#1e3a5f" font-weight="bold" font-family="sans-serif">39%</text>
+                        <rect x="40" y="135" width="223" height="28" rx="4" fill="#fff"/>
+                        <rect x="40" y="135" width="223" height="10" rx="4" fill="#f3b511" opacity="0.15"/>
+                        <text x="46" y="142" font-size="3.5" fill="#92610a" font-weight="bold" font-family="sans-serif">Región</text>
+                        <text x="100" y="142" font-size="3.5" fill="#92610a" font-weight="bold" font-family="sans-serif">Ventas</text>
+                        <text x="155" y="142" font-size="3.5" fill="#92610a" font-weight="bold" font-family="sans-serif">Var %</text>
+                        <text x="210" y="142" font-size="3.5" fill="#92610a" font-weight="bold" font-family="sans-serif">Estado</text>
+                        <text x="46" y="150" font-size="3.5" fill="#334155" font-family="sans-serif">Buenos Aires</text>
+                        <text x="100" y="150" font-size="3.5" fill="#334155" font-family="sans-serif">$198K</text>
+                        <text x="155" y="150" font-size="3.5" fill="#22c55e" font-family="sans-serif">+14%</text>
+                        <rect x="210" y="146" width="30" height="6" rx="3" fill="#dcfce7"/>
+                        <text x="215" y="151" font-size="3.5" fill="#15803d" font-family="sans-serif">On track</text>
+                        <text x="46" y="158" font-size="3.5" fill="#334155" font-family="sans-serif">Córdoba</text>
+                        <text x="100" y="158" font-size="3.5" fill="#334155" font-family="sans-serif">$124K</text>
+                        <text x="155" y="158" font-size="3.5" fill="#ef4444" font-family="sans-serif">-3%</text>
+                        <rect x="210" y="154" width="30" height="6" rx="3" fill="#fee2e2"/>
+                        <text x="218" y="159" font-size="3.5" fill="#dc2626" font-family="sans-serif">Alerta</text>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="desktop-stand"></div>
+                  <div class="desktop-base"></div>
+                  <div class="device-label">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/New_Power_BI_Logo.svg" alt=""> Power BI · Reportes
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2: Power Apps — Phone -->
+              <div class="device-item is-phone">
+                <div style="position:relative;width:100%;">
+                  <div class="phone-frame">
+                    <div class="phone-notch"><div class="phone-notch-pill"></div></div>
+                    <div class="phone-screen-area">
+                      <svg viewBox="0 0 160 256" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+                        <rect width="160" height="256" fill="#f1f5f9"/>
+                        <rect x="0" y="0" width="160" height="36" fill="#7c3aed"/>
+                        <text x="12" y="13" font-size="5" fill="rgba(255,255,255,0.7)" font-family="sans-serif">← Volver</text>
+                        <text x="12" y="27" font-size="8" fill="#fff" font-weight="bold" font-family="sans-serif">Service Desk</text>
+                        <rect x="138" y="10" width="16" height="16" rx="8" fill="rgba(255,255,255,0.2)"/>
+                        <text x="143" y="21" font-size="6" fill="#fff" font-family="sans-serif">+</text>
+                        <rect x="8" y="42" width="44" height="38" rx="6" fill="#fff"/>
+                        <text x="16" y="54" font-size="4" fill="#64748b" font-family="sans-serif">All Tickets</text>
+                        <text x="20" y="68" font-size="12" fill="#7c3aed" font-weight="bold" font-family="sans-serif">11</text>
+                        <rect x="58" y="42" width="44" height="38" rx="6" fill="#fff"/>
+                        <text x="63" y="54" font-size="4" fill="#64748b" font-family="sans-serif">New Ticket</text>
+                        <text x="75" y="68" font-size="12" fill="#f59e0b" font-weight="bold" font-family="sans-serif">1</text>
+                        <rect x="108" y="42" width="44" height="38" rx="6" fill="#fff"/>
+                        <text x="113" y="54" font-size="4" fill="#64748b" font-family="sans-serif">Closed</text>
+                        <text x="125" y="68" font-size="12" fill="#22c55e" font-weight="bold" font-family="sans-serif">2</text>
+                        <rect x="8" y="86" width="44" height="22" rx="6" fill="#ddd6fe"/>
+                        <text x="14" y="96" font-size="4" fill="#7c3aed" font-family="sans-serif">In Progress</text>
+                        <text x="27" y="104" font-size="8" fill="#7c3aed" font-weight="bold" font-family="sans-serif">5</text>
+                        <rect x="58" y="86" width="44" height="22" rx="6" fill="#d1fae5"/>
+                        <text x="68" y="96" font-size="4" fill="#059669" font-family="sans-serif">Closed</text>
+                        <text x="77" y="104" font-size="8" fill="#059669" font-weight="bold" font-family="sans-serif">2</text>
+                        <rect x="108" y="86" width="44" height="22" rx="6" fill="#fee2e2"/>
+                        <text x="116" y="96" font-size="4" fill="#dc2626" font-family="sans-serif">On Hold</text>
+                        <text x="126" y="104" font-size="8" fill="#dc2626" font-weight="bold" font-family="sans-serif">3</text>
+                        <rect x="8" y="114" width="144" height="24" rx="5" fill="#fff"/>
+                        <rect x="8" y="114" width="4" height="24" rx="2" fill="#7c3aed"/>
+                        <text x="17" y="124" font-size="5" fill="#1e293b" font-weight="bold" font-family="sans-serif">All Tickets</text>
+                        <text x="17" y="133" font-size="4" fill="#64748b" font-family="sans-serif">Ver todos los tickets activos</text>
+                        <text x="145" y="128" font-size="7" fill="#94a3b8" font-family="sans-serif">›</text>
+                        <rect x="8" y="143" width="144" height="24" rx="5" fill="#fff"/>
+                        <rect x="8" y="143" width="4" height="24" rx="2" fill="#f59e0b"/>
+                        <text x="17" y="153" font-size="5" fill="#1e293b" font-weight="bold" font-family="sans-serif">New Tickets</text>
+                        <text x="17" y="162" font-size="4" fill="#64748b" font-family="sans-serif">Tickets sin asignar</text>
+                        <text x="145" y="157" font-size="7" fill="#94a3b8" font-family="sans-serif">›</text>
+                        <rect x="8" y="172" width="144" height="24" rx="5" fill="#fff"/>
+                        <rect x="8" y="172" width="4" height="24" rx="2" fill="#3b82f6"/>
+                        <text x="17" y="182" font-size="5" fill="#1e293b" font-weight="bold" font-family="sans-serif">Tickets In Progress</text>
+                        <text x="17" y="191" font-size="4" fill="#64748b" font-family="sans-serif">En curso · asignados</text>
+                        <text x="145" y="186" font-size="7" fill="#94a3b8" font-family="sans-serif">›</text>
+                        <rect x="8" y="201" width="144" height="24" rx="5" fill="#fff"/>
+                        <rect x="8" y="201" width="4" height="24" rx="2" fill="#ef4444"/>
+                        <text x="17" y="211" font-size="5" fill="#1e293b" font-weight="bold" font-family="sans-serif">Tickets On Hold</text>
+                        <text x="17" y="220" font-size="4" fill="#64748b" font-family="sans-serif">Pausados · pendientes</text>
+                        <text x="145" y="215" font-size="7" fill="#94a3b8" font-family="sans-serif">›</text>
+                        <rect x="8" y="230" width="144" height="22" rx="5" fill="#fff"/>
+                        <rect x="8" y="230" width="4" height="22" rx="2" fill="#22c55e"/>
+                        <text x="17" y="240" font-size="5" fill="#1e293b" font-weight="bold" font-family="sans-serif">Tickets Closed</text>
+                        <text x="17" y="249" font-size="4" fill="#64748b" font-family="sans-serif">Cerrados · resueltos</text>
+                        <text x="145" y="244" font-size="7" fill="#94a3b8" font-family="sans-serif">›</text>
+                      </svg>
+                    </div>
+                    <div class="phone-home-bar"><div class="phone-home-pill"></div></div>
+                  </div>
+                  <div class="device-label" style="bottom:-26px;">
+                    <img src="https://img.icons8.com/fluent/1200/microsoft-power-apps.jpg" alt="" style="border-radius:3px;"> Power Apps · Mobile
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3: Microsoft Fabric — Desktop -->
+              <div class="device-item is-desktop">
+                <div style="position:relative;width:100%;">
+                  <div class="desktop-frame">
+                    <div class="desktop-topbar">
+                      <div class="desktop-dot" style="background:#ef4444"></div>
+                      <div class="desktop-dot" style="background:#f59e0b"></div>
+                      <div class="desktop-dot" style="background:#22c55e"></div>
+                      <div style="flex:1;background:#1e3a5f;border-radius:3px;height:8px;margin-left:6px;display:flex;align-items:center;padding:0 6px;">
+                        <span style="font-size:5px;color:#93c5fd;font-family:monospace;">app.fabric.microsoft.com · UW Dev Workspace</span>
+                      </div>
+                    </div>
+                    <div class="desktop-screen">
+                      <svg viewBox="0 0 280 168" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+                        <rect width="280" height="168" fill="#f0f4f8"/>
+                        <rect x="0" y="0" width="32" height="168" fill="#1e293b"/>
+                        <rect x="6" y="8" width="20" height="20" rx="4" fill="#0ea5e9" opacity="0.9"/>
+                        <text x="10" y="22" font-size="8" fill="#fff" font-family="sans-serif">F</text>
+                        <rect x="9" y="38" width="14" height="3" rx="1.5" fill="#3b82f6" opacity="0.8"/>
+                        <rect x="9" y="47" width="14" height="3" rx="1.5" fill="#475569"/>
+                        <rect x="9" y="56" width="14" height="3" rx="1.5" fill="#475569"/>
+                        <rect x="32" y="0" width="248" height="24" fill="#fff"/>
+                        <text x="40" y="10" font-size="4.5" fill="#64748b" font-family="sans-serif">UW Dev Workspace</text>
+                        <text x="40" y="19" font-size="6" fill="#0f172a" font-weight="bold" font-family="sans-serif">Microsoft Fabric</text>
+                        <rect x="200" y="6" width="70" height="12" rx="4" fill="#0ea5e9" opacity="0.15"/>
+                        <text x="212" y="14" font-size="4.5" fill="#0369a1" font-family="sans-serif">+ Nuevo item</text>
+                        <rect x="32" y="24" width="248" height="14" fill="#f8fafc"/>
+                        <text x="40" y="33" font-size="4" fill="#64748b" font-family="sans-serif">Nombre</text>
+                        <text x="130" y="33" font-size="4" fill="#64748b" font-family="sans-serif">Tipo</text>
+                        <text x="175" y="33" font-size="4" fill="#64748b" font-family="sans-serif">Actualizado</text>
+                        <text x="230" y="33" font-size="4" fill="#64748b" font-family="sans-serif">Propietario</text>
+                        <rect x="32" y="38" width="248" height="16" fill="#fff"/>
+                        <rect x="36" y="41" width="10" height="10" rx="2" fill="#f59e0b" opacity="0.8"/>
+                        <text x="36" y="47" font-size="5" fill="#fff" font-weight="bold" font-family="sans-serif">S</text>
+                        <text x="50" y="49" font-size="4.5" fill="#0f172a" font-family="sans-serif">Prueba</text>
+                        <rect x="128" y="42" width="38" height="8" rx="3" fill="#fef3c7"/>
+                        <text x="132" y="48" font-size="3.5" fill="#92400e" font-family="sans-serif">Modelo Semántico</text>
+                        <text x="175" y="49" font-size="4" fill="#64748b" font-family="sans-serif">hace 2h</text>
+                        <text x="230" y="49" font-size="4" fill="#64748b" font-family="sans-serif">R. Ugarte</text>
+                        <rect x="32" y="54" width="248" height="16" fill="#f8fafc"/>
+                        <rect x="36" y="57" width="10" height="10" rx="2" fill="#f3b511" opacity="0.9"/>
+                        <text x="38" y="63" font-size="5" fill="#fff" font-weight="bold" font-family="sans-serif">P</text>
+                        <text x="50" y="65" font-size="4.5" fill="#0f172a" font-family="sans-serif">UND-RPT-014 HO New Business</text>
+                        <rect x="128" y="58" width="25" height="8" rx="3" fill="#dbeafe"/>
+                        <text x="131" y="64" font-size="3.5" fill="#1d4ed8" font-family="sans-serif">Reporte</text>
+                        <text x="175" y="65" font-size="4" fill="#64748b" font-family="sans-serif">ayer</text>
+                        <text x="230" y="65" font-size="4" fill="#64748b" font-family="sans-serif">R. Ugarte</text>
+                        <rect x="32" y="70" width="248" height="16" fill="#fff"/>
+                        <rect x="36" y="73" width="10" height="10" rx="2" fill="#22c55e" opacity="0.8"/>
+                        <text x="38" y="79" font-size="5" fill="#fff" font-weight="bold" font-family="sans-serif">D</text>
+                        <text x="50" y="81" font-size="4.5" fill="#0f172a" font-family="sans-serif">Deployment Pipeline · Dev→Prod</text>
+                        <rect x="128" y="74" width="28" height="8" rx="3" fill="#dcfce7"/>
+                        <text x="131" y="80" font-size="3.5" fill="#15803d" font-family="sans-serif">Pipeline</text>
+                        <text x="175" y="81" font-size="4" fill="#64748b" font-family="sans-serif">3 días</text>
+                        <text x="230" y="81" font-size="4" fill="#64748b" font-family="sans-serif">R. Ugarte</text>
+                        <rect x="32" y="86" width="248" height="16" fill="#f8fafc"/>
+                        <rect x="36" y="89" width="10" height="10" rx="2" fill="#8b5cf6" opacity="0.8"/>
+                        <text x="38" y="95" font-size="5" fill="#fff" font-weight="bold" font-family="sans-serif">G</text>
+                        <text x="50" y="97" font-size="4.5" fill="#0f172a" font-family="sans-serif">Dataflow Gen2 · PremiumAll</text>
+                        <rect x="128" y="90" width="30" height="8" rx="3" fill="#ede9fe"/>
+                        <text x="131" y="96" font-size="3.5" fill="#6d28d9" font-family="sans-serif">Dataflow G2</text>
+                        <text x="175" y="97" font-size="4" fill="#64748b" font-family="sans-serif">1 sem</text>
+                        <text x="230" y="97" font-size="4" fill="#64748b" font-family="sans-serif">R. Ugarte</text>
+                        <rect x="32" y="102" width="248" height="16" fill="#fff"/>
+                        <rect x="36" y="105" width="10" height="10" rx="2" fill="#0ea5e9" opacity="0.8"/>
+                        <text x="38" y="111" font-size="5" fill="#fff" font-weight="bold" font-family="sans-serif">R</text>
+                        <text x="50" y="113" font-size="4.5" fill="#0f172a" font-family="sans-serif">CLR-RPT-009 Catastrophe Cancel</text>
+                        <rect x="128" y="106" width="35" height="8" rx="3" fill="#e0f2fe"/>
+                        <text x="131" y="112" font-size="3.5" fill="#0369a1" font-family="sans-serif">Rept. Paginado</text>
+                        <text x="175" y="113" font-size="4" fill="#64748b" font-family="sans-serif">2 sem</text>
+                        <text x="230" y="113" font-size="4" fill="#64748b" font-family="sans-serif">R. Ugarte</text>
+                        <rect x="32" y="124" width="248" height="40" fill="#eff6ff"/>
+                        <rect x="32" y="124" width="4" height="40" fill="#3b82f6"/>
+                        <text x="42" y="136" font-size="5" fill="#1d4ed8" font-weight="bold" font-family="sans-serif">OneLake · Fuente unificada</text>
+                        <text x="42" y="147" font-size="4" fill="#3b82f6" font-family="sans-serif">PremiumAll · BudgetByState · SubmissionQuotes · DateTable</text>
+                        <text x="42" y="158" font-size="4" fill="#64748b" font-family="sans-serif">Todas las tablas disponibles en el workspace</text>
+                        <rect x="200" y="128" width="72" height="14" rx="5" fill="#22c55e" opacity="0.15"/>
+                        <text x="207" y="137" font-size="4" fill="#15803d" font-weight="bold" font-family="sans-serif">✓ RLS/OLS activo</text>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="desktop-stand"></div>
+                  <div class="desktop-base"></div>
+                  <div class="device-label">
+                    <img src="https://static.wikia.nocookie.net/logopedia/images/a/aa/Microsoft_Fabric_2023.svg/revision/latest/scale-to-width-down/200?cb=20230528223239" alt=""> Microsoft Fabric · Workspace
+                  </div>
+                </div>
+              </div>
+
+              <!-- 4: Sistema Web — Phone -->
+              <div class="device-item is-phone">
+                <div style="position:relative;width:100%;">
+                  <div class="phone-frame">
+                    <div class="phone-notch"><div class="phone-notch-pill"></div></div>
+                    <div class="phone-screen-area">
+                      <svg viewBox="0 0 160 256" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+                        <rect width="160" height="256" fill="#0f172a"/>
+                        <rect x="0" y="0" width="160" height="34" fill="#1e293b"/>
+                        <rect x="8" y="8" width="16" height="16" rx="4" fill="#10b981" opacity="0.9"/>
+                        <text x="11" y="19" font-size="7" fill="#fff" font-weight="bold" font-family="sans-serif">$</text>
+                        <text x="30" y="16" font-size="6" fill="#fff" font-weight="bold" font-family="sans-serif">Sistema Ventas</text>
+                        <text x="30" y="26" font-size="4" fill="#64748b" font-family="sans-serif">Distribuidora · Depósito</text>
+                        <rect x="6" y="40" width="68" height="38" rx="6" fill="#1e293b"/>
+                        <text x="12" y="52" font-size="4" fill="#64748b" font-family="sans-serif">Ventas Hoy</text>
+                        <text x="12" y="68" font-size="10" fill="#10b981" font-weight="bold" font-family="sans-serif">$124K</text>
+                        <rect x="82" y="40" width="72" height="38" rx="6" fill="#1e293b"/>
+                        <text x="88" y="52" font-size="4" fill="#64748b" font-family="sans-serif">Stock Total</text>
+                        <text x="88" y="68" font-size="10" fill="#3b82f6" font-weight="bold" font-family="sans-serif">4,821</text>
+                        <rect x="6" y="84" width="148" height="60" rx="6" fill="#1e293b"/>
+                        <text x="12" y="94" font-size="4.5" fill="#94a3b8" font-weight="bold" font-family="sans-serif">Movimiento Stock · Hoy</text>
+                        <polyline points="16,132 30,124 44,128 58,112 72,118 86,106 100,110 114,98 128,102 142,92" fill="none" stroke="#10b981" stroke-width="2" stroke-linejoin="round"/>
+                        <circle cx="142" cy="92" r="3" fill="#10b981"/>
+                        <text x="138" y="89" font-size="3.5" fill="#10b981" font-family="sans-serif">+18%</text>
+                        <text x="12" y="157" font-size="4.5" fill="#94a3b8" font-weight="bold" font-family="sans-serif">Últimas Facturas</text>
+                        <rect x="6" y="161" width="148" height="18" rx="4" fill="#1e293b"/>
+                        <rect x="6" y="161" width="3" height="18" rx="1.5" fill="#10b981"/>
+                        <text x="14" y="170" font-size="4.5" fill="#e2e8f0" font-weight="bold" font-family="sans-serif">FAC-2847</text>
+                        <text x="14" y="177" font-size="3.5" fill="#64748b" font-family="sans-serif">Bebidas Córdoba · 240 un</text>
+                        <text x="118" y="170" font-size="4.5" fill="#10b981" font-weight="bold" font-family="sans-serif">$18.4K</text>
+                        <text x="121" y="177" font-size="3" fill="#10b981" font-family="sans-serif">✓ Ingresada</text>
+                        <rect x="6" y="183" width="148" height="18" rx="4" fill="#1e293b"/>
+                        <rect x="6" y="183" width="3" height="18" rx="1.5" fill="#f59e0b"/>
+                        <text x="14" y="192" font-size="4.5" fill="#e2e8f0" font-weight="bold" font-family="sans-serif">FAC-2846</text>
+                        <text x="14" y="199" font-size="3.5" fill="#64748b" font-family="sans-serif">Cervezas Norte · 180 un</text>
+                        <text x="118" y="192" font-size="4.5" fill="#f59e0b" font-weight="bold" font-family="sans-serif">$12.1K</text>
+                        <text x="121" y="199" font-size="3" fill="#f59e0b" font-family="sans-serif">⟳ Pendiente</text>
+                        <rect x="6" y="205" width="148" height="18" rx="4" fill="#1e293b"/>
+                        <rect x="6" y="205" width="3" height="18" rx="1.5" fill="#3b82f6"/>
+                        <text x="14" y="214" font-size="4.5" fill="#e2e8f0" font-weight="bold" font-family="sans-serif">FAC-2845</text>
+                        <text x="14" y="221" font-size="3.5" fill="#64748b" font-family="sans-serif">Jugos Premium · 320 un</text>
+                        <text x="118" y="214" font-size="4.5" fill="#3b82f6" font-weight="bold" font-family="sans-serif">$22.8K</text>
+                        <text x="121" y="221" font-size="3" fill="#3b82f6" font-family="sans-serif">✓ Entregada</text>
+                        <rect x="6" y="228" width="148" height="22" rx="6" fill="#1d4ed8" opacity="0.15"/>
+                        <rect x="6" y="228" width="148" height="22" rx="6" fill="none" stroke="#3b82f6" stroke-width="1" opacity="0.4"/>
+                        <text x="18" y="239" font-size="4" fill="#93c5fd" font-weight="bold" font-family="sans-serif">Ver en Power BI App</text>
+                        <text x="18" y="247" font-size="3.5" fill="#64748b" font-family="sans-serif">Dashboard dueños · tiempo real</text>
+                      </svg>
+                    </div>
+                    <div class="phone-home-bar"><div class="phone-home-pill"></div></div>
+                  </div>
+                  <div class="device-label" style="bottom:-26px;">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" alt=""> Web App · Gestión
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /device-carousel -->
+          </div><!-- /device-scene -->
+          <p style="color:#475569;font-size:0.72rem;text-align:center;">
+           
+          </p>
+        </div>
+
+      </div><!-- /hero-inner -->
+    </section>
+
+    <script>
+    (function(){
+      var canvas = document.getElementById('hero-canvas');
+      if (!canvas) return;
+      var ctx = canvas.getContext('2d');
+      var pts = [];
+      function resize(){
+        canvas.width  = canvas.offsetWidth  || window.innerWidth;
+        canvas.height = canvas.offsetHeight || window.innerHeight;
+      }
+      function initPts(){
+        pts = [];
+        var n = Math.floor((canvas.width * canvas.height) / 13000);
+        for(var i=0;i<n;i++){
+          pts.push({
+            x: Math.random()*canvas.width,
+            y: Math.random()*canvas.height,
+            vx:(Math.random()-0.5)*0.42,
+            vy:(Math.random()-0.5)*0.42,
+            r: Math.random()*1.8+0.7
+          });
+        }
+      }
+      function draw(){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        var maxDist = 115;
+        for(var i=0;i<pts.length;i++){
+          var p=pts[i];
+          p.x+=p.vx; p.y+=p.vy;
+          if(p.x<0||p.x>canvas.width)  p.vx*=-1;
+          if(p.y<0||p.y>canvas.height) p.vy*=-1;
+          ctx.beginPath();
+          ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+          ctx.fillStyle='rgba(96,165,250,0.65)';
+          ctx.fill();
+          for(var j=i+1;j<pts.length;j++){
+            var q=pts[j];
+            var dx=p.x-q.x, dy=p.y-q.y;
+            var d=Math.sqrt(dx*dx+dy*dy);
+            if(d<maxDist){
+              ctx.beginPath();
+              ctx.moveTo(p.x,p.y);
+              ctx.lineTo(q.x,q.y);
+              ctx.strokeStyle='rgba(96,165,250,'+(0.22*(1-d/maxDist))+')';
+              ctx.lineWidth=0.6;
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(draw);
+      }
+      window.addEventListener('resize',function(){ resize(); initPts(); });
+      resize(); initPts(); draw();
+    })();
+    </script>
+
+
+
+
+    <!-- Muestra de Habilidades -->
+    <section class="py-20 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="text-4xl font-bold text-slate-800 mb-4">Experiencia Técnica</h2>
+                <p class="text-xl text-slate-600 max-w-3xl mx-auto">
+                    Competente en herramientas y tecnologías líderes para análisis de datos integrales
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    
+    <!-- Power BI & DAX -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+        <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/New_Power_BI_Logo.svg" alt="Power BI Logo" class="w-10 h-10">
+        </div>
+        <h3 class="text-xl font-semibold text-slate-800 mb-3">Power BI & DAX</h3>
+        <p class="text-slate-600 mb-4">Dashboards interactivos, reportes paginados en Report Builder, medidas DAX avanzadas, RLS y OLS.</p>
+        <div class="flex flex-wrap gap-2">
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">DAX</span>
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">Report Builder</span>
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">RLS/OLS</span>
+            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">Paginated Reports</span>
+        </div>
+    </div>
+
+    <!-- Microsoft Fabric -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+        <div class="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+            <img src="https://static.wikia.nocookie.net/logopedia/images/a/aa/Microsoft_Fabric_2023.svg/revision/latest/scale-to-width-down/200?cb=20230528223239" alt="Microsoft Fabric Logo" class="w-10 h-10">
+        </div>
+        <h3 class="text-xl font-semibold text-slate-800 mb-3">Microsoft Fabric</h3>
+        <p class="text-slate-600 mb-4">Implementaciones end-to-end: OneLake, Deployment Pipelines, Semantic Models y publicación de apps.</p>
+        <div class="flex flex-wrap gap-2">
+            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">OneLake</span>
+            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">Pipelines</span>
+            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">Semantic Model</span>
+            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">Lakehouse</span>
+        </div>
+    </div>
+
+    <!-- SQL Server & ETL -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+        <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mb-6">
+            <img src="https://img.icons8.com/color/1200/microsoft-sql-server.jpg" alt="SQL Logo" class="w-12 h-12">
+        </div>
+        <h3 class="text-xl font-semibold text-slate-800 mb-3">SQL Server & ETL</h3>
+        <p class="text-slate-600 mb-4">Stored procedures complejos, diseño de warehouses con esquemas fact/dim, optimización de queries.</p>
+        <div class="flex flex-wrap gap-2">
+            <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-medium">T-SQL</span>
+            <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-medium">Stored Procs</span>
+            <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-medium">Data Warehouse</span>
+            <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-medium">ETL</span>
+        </div>
+    </div>
+
+    <!-- Python & Fabric -->
+<div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+    <div class="w-16 h-16 bg-emerald-100 rounded-lg flex items-center justify-center mb-6">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python Logo" class="w-10 h-10">
+    </div>
+    <h3 class="text-xl font-semibold text-slate-800 mb-3">Python & Fabric</h3>
+    <p class="text-slate-600 mb-4">Integración de Python con Microsoft Fabric mediante Semantic Link para análisis directo sobre modelos semánticos y validación de datos con pandas.</p>
+    <div class="flex flex-wrap gap-2">
+        <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-medium">pandas</span>
+        <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-medium">Semantic Link</span>
+        <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-medium">Fabric Notebooks</span>
+        <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-medium">Data Validation</span>
+    </div>
+</div>
+
+    <!-- Power Apps -->
+    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+        <div class="w-16 h-16 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
+            <img src="https://img.icons8.com/fluent/1200/microsoft-power-apps.jpg" alt="Power Apps Logo" class="w-12 h-12">
+        </div>
+        <h3 class="text-xl font-semibold text-slate-800 mb-3">Power Apps</h3>
+        <p class="text-slate-600 mb-4">Aplicaciones canvas para captura de datos, formularios y automatización de flujos de trabajo.</p>
+        <div class="flex flex-wrap gap-2">
+            <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-medium">Canvas Apps</span>
+            <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-medium">Power Automate</span>
+            <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-xs font-medium">Dataverse</span>
+        </div>
+    </div>
+
+    <!-- Visualización & BI -->
+<div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 scroll-reveal">
+    <div class="w-16 h-16 bg-amber-100 rounded-lg flex items-center justify-center mb-6">
+        <img src="https://cdn-icons-png.flaticon.com/512/2920/2920277.png" alt="Dashboard Icon" class="w-10 h-10">
+    </div>
+    <h3 class="text-xl font-semibold text-slate-800 mb-3">Visualización & BI</h3>
+    <p class="text-slate-600 mb-4">Storytelling con datos, diseño de dashboards orientados a decisiones, KPIs y métricas de negocio.</p>
+    <div class="flex flex-wrap gap-2">
+        <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-medium">Dashboards</span>
+        <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-medium">KPIs</span>
+        <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-medium">Data Storytelling</span>
+    </div>
+</div>
+
+</div>
+</section>
+
+
+
+    <!-- Footer -->
+    <footer style="background:#0f172a; color:#f1f5f9; padding: 48px 0 0;">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <!-- 3 column grid -->
+            <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px; padding-bottom: 40px;">
+
+                <!-- Brand column -->
+                <div>
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+                        <img src="./resources/profile-photo.jpg" alt="Ricardo Ugarte"
+                             style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #2563eb;">
+                        <div>
+                            <div style="font-size:1.1rem;font-weight:800;">Ricardo <span style="color:#3b82f6;">Ugarte</span></div>
+                            <div style="font-size:0.75rem;color:#64748b;">Data Analyst </div>
+                        </div>
+                    </div>
+                    <p style="font-size:0.85rem;color:#64748b;line-height:1.7;margin-bottom:20px;max-width:280px;">
+                        Uso herramientas como Microsoft Fabric, Power BI, DAX y SQL Server.
+                        Trabajo con empresas para convertir datos en decisiones claras.
+                    </p>
+                    <div style="display:flex;gap:10px;">
+                        <a href="https://www.linkedin.com/in/ricardo-ugarte" target="_blank"
+                           style="width:36px;height:36px;border-radius:8px;background:#1e293b;border:1px solid #334155;display:flex;align-items:center;justify-content:center;transition:border-color 0.2s;"
+                           title="LinkedIn">
+                            <svg width="16" height="16" fill="#3b82f6" viewBox="0 0 24 24">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/>
+                            </svg>
+                        </a>
+                        <a href="mailto:info@nudatabi.com"
+                           style="width:36px;height:36px;border-radius:8px;background:#1e293b;border:1px solid #334155;display:flex;align-items:center;justify-content:center;"
+                           title="Email">
+                            <svg width="16" height="16" fill="#64748b" viewBox="0 0 24 24">
+                                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Servicios column -->
+                <div>
+                    <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#94a3b8;margin-bottom:16px;">Servicios</div>
+                    <a href="portfolio.html" style="display:block;font-size:0.875rem;color:#64748b;margin-bottom:10px;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#64748b'">Power BI</a>
+                    <a href="portfolio.html" style="display:block;font-size:0.875rem;color:#64748b;margin-bottom:10px;text-decoration:none;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#64748b'">Microsoft Fabric</a>
+                    <a href="portfolio.html" style="display:block;font-size:0.875rem;color:#64748b;margin-bottom:10px;text-decoration:none;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#64748b'">SQL &amp; DAX</a>
+                    <a href="portfolio.html" style="display:block;font-size:0.875rem;color:#64748b;margin-bottom:10px;text-decoration:none;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#64748b'">Desarrollo Web &amp; CRM</a>
+                </div>
+
+                <!-- Navegación column -->
+                <div>
+                    <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#94a3b8;margin-bottom:16px;">Navegación</div>
+                    <a href="index.html"   style="display:block;font-size:0.875rem;color:#64748b;margin-bottom:10px;text-decoration:none;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#64748b'">Inicio</a>
+                    <a href="about.html"   style="display:block;font-size:0.875rem;color:#64748b;margin-bottom:10px;text-decoration:none;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#64748b'">Acerca de</a>
+                    <a href="portfolio.html" style="display:block;font-size:0.875rem;color:#64748b;margin-bottom:10px;text-decoration:none;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#64748b'">Portfolio</a>
+                    <a href="blog.html"    style="display:block;font-size:0.875rem;color:#64748b;margin-bottom:10px;text-decoration:none;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#64748b'">Blog</a>
+                    <a href="contact.html" style="display:block;font-size:0.875rem;color:#64748b;text-decoration:none;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#64748b'">Contacto</a>
+                </div>
+            </div>
+
+            <!-- Bottom bar -->
+            <div style="border-top:1px solid #1e293b; padding: 20px 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                <p style="font-size:0.8rem;color:#475569;">
+                    © 2025 <span style="color:#3b82f6;">Ricardo Ugarte</span> · Data Analyst 
+                </p>
+                <div style="display:flex;gap:8px;">
+                    <span style="background:#1e293b;border:1px solid #334155;padding:3px 10px;border-radius:5px;font-size:0.72rem;color:#64748b;">Power BI</span>
+                    <span style="background:#1e293b;border:1px solid #334155;padding:3px 10px;border-radius:5px;font-size:0.72rem;color:#64748b;">MS Fabric</span>
+                    <span style="background:#1e293b;border:1px solid #334155;padding:3px 10px;border-radius:5px;font-size:0.72rem;color:#64748b;">DAX</span>
+                    <span style="background:#1e293b;border:1px solid #334155;padding:3px 10px;border-radius:5px;font-size:0.72rem;color:#64748b;">Node.js</span>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+
+    
+
+    <script src="./main.js"></script>
+    <script>
+      // Mobile menu
+      document.addEventListener('DOMContentLoaded', function() {
+        var btn = document.getElementById('mobile-menu-btn');
+        var menu = document.getElementById('mobile-menu');
+        if (btn && menu) btn.addEventListener('click', function() { menu.classList.toggle('hidden'); });
+
+        // Typed.js
+        if (typeof Typed !== 'undefined') {
+          new Typed('#typed-text', {
+            strings: ['Microsoft Fabric Consultant','Power BI Developer','DAX & SQL','Desarrollo Web & CRM a medida'],
+            typeSpeed: 50, backSpeed: 30, backDelay: 2200, loop: true, showCursor: true, cursorChar: '|'
+          });
+        }
+
+        // Scroll reveal
+        var reveals = document.querySelectorAll('.scroll-reveal');
+        var obs = new IntersectionObserver(function(entries){
+          entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('revealed'); });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        reveals.forEach(function(el){ obs.observe(el); });
+
+        // Skill bars
+        var bars = document.querySelectorAll('.skill-bar');
+        var bObs = new IntersectionObserver(function(entries){
+          entries.forEach(function(e){
+            if(e.isIntersecting){
+              var w = e.target.getAttribute('data-width');
+              if(w){ e.target.style.width = w; e.target.style.transition = 'width 1.5s ease-in-out'; }
+            }
+          });
+        }, { threshold: 0.5 });
+        bars.forEach(function(b){ bObs.observe(b); });
+      });
+    </script>
+</body>
+</html>
